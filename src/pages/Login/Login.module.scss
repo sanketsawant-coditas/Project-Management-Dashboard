@@ -1,0 +1,29 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.container {
+  min-height: 100vh;
+  @include flex-center;
+}
+.card {
+  @include card;
+  width: 100%;
+  max-width: 400px;
+}
+.title {
+  font-size: $text-2xl;
+  text-align: center;
+  margin-bottom: $spacing-6;
+}
+.error {
+  color: $danger;
+  font-size: $text-sm;
+  text-align: center;
+  margin-bottom: $spacing-4;
+}
+.testCreds {
+  margin-top: $spacing-6;
+  font-size: $text-sm;
+  text-align: center;
+  color: $gray-500;
+}

@@ -1,0 +1,13 @@
+@use '../../styles/variables' as *;
+
+.badge {
+  display: inline-block;
+  padding: $spacing-1 $spacing-2;
+  font-size: $text-xs;
+  font-weight: 500;
+  border-radius: $radius-xl;
+  &.default { background: $gray-200; color: $gray-700; }
+  &.success { background: $success; color: white; }
+  &.warning { background: $warning; color: white; }
+  &.danger { background: $danger; color: white; }
+}

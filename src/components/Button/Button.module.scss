@@ -1,0 +1,29 @@
+@use '../../styles/variables' as *;
+
+.button {
+  padding: $spacing-2 $spacing-4;
+  font-size: $text-sm;
+  font-weight: 500;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: 0.2s;
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  &.primary {
+    background: $primary;
+    color: white;
+    &:hover:not(:disabled) { opacity: 0.9; }
+  }
+  &.secondary {
+    background: $gray-200;
+    color: $gray-700;
+    &:hover:not(:disabled) { background: $gray-300; }
+  }
+  &.danger {
+    background: $danger;
+    color: white;
+  }
+}
