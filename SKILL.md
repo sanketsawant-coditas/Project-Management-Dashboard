@@ -1,5 +1,19 @@
-Here’s a `SKILL.md` that documents everything you have built so far, the current state, and the next steps.
-
+---
+name: project-management-dashboard
+description: |
+  Full-stack dashboard with RBAC, user management, and project management.
+  Built with React + TypeScript + SCSS, consuming a mock REST API.
+version: 0.1.0
+author: Developer
+tags:
+  - react
+  - typescript
+  - scss
+  - rbac
+  - dashboard
+status: in-progress
+created: 2026-04-22
+updated: 2026-04-22
 ---
 
 # Project Management Dashboard – Development Status
@@ -19,18 +33,16 @@ Built with **React + TypeScript + SCSS** and custom UI components (no external U
 - Path alias `@/` configured (Vite + TypeScript)
 - Environment variables (`.env`) for API base URL
 - Folder structure:
-  ```
-  src/
-  ├── api/              → axios instance with interceptors
-  ├── styles/           → global SCSS, variables, mixins
-  ├── components/       → Button, Input, Badge (custom), ProtectedRoute
-  ├── context/          → AuthContext (auth state, token storage)
-  ├── pages/
-  │   ├── Login/        → login form (react‑hook‑form + zod)
-  │   └── users/        → UsersList (pagination, filter, CRUD)
-  ├── App.tsx           → routes (login, dashboard, users)
-  └── main.tsx          → BrowserRouter + global styles
-  ```
+src/
+├── api/ → axios instance with interceptors
+├── styles/ → global SCSS, variables, mixins
+├── components/ → Button, Input, Badge (custom), ProtectedRoute
+├── context/ → AuthContext (auth state, token storage)
+├── pages/
+│ ├── Login/ → login form (react‑hook‑form + zod)
+│ └── users/ → UsersList (pagination, filter, CRUD)
+├── App.tsx → routes (login, dashboard, users)
+└── main.tsx → BrowserRouter + global styles
 
 ### 2. Authentication & Authorization
 - **Login page** (`/login`) with email/password, validation (react‑hook‑form + zod)
@@ -51,9 +63,9 @@ Built with **React + TypeScript + SCSS** and custom UI components (no external U
 - **Toggle status** – `PATCH /users/:id/toggle-status`
 - **Delete user** – `DELETE /users/:id` (Super Admin only)
 - Role‑based UI:
-  - Super Admin: all buttons (Edit, Toggle Status, Delete)
-  - Admin: Edit + Toggle Status (no Delete)
-  - Regular User: cannot access `/users` (redirect or 403)
+- Super Admin: all buttons (Edit, Toggle Status, Delete)
+- Admin: Edit + Toggle Status (no Delete)
+- Regular User: cannot access `/users` (redirect or 403)
 
 ### 4. Custom UI Components
 - `Button` – variants (primary, secondary, danger), loading state
@@ -122,9 +134,9 @@ Built with **React + TypeScript + SCSS** and custom UI components (no external U
 2. **Add logout button** in a Navbar component.
 3. **Build Dashboard page** – summary cards, project statistics (from `/projects/statistics`).
 4. **Implement Project Management**:
-   - Projects list with pagination, status/priority filters
-   - Create/Edit project forms
-   - Project details page with team members (add/remove members)
+ - Projects list with pagination, status/priority filters
+ - Create/Edit project forms
+ - Project details page with team members (add/remove members)
 5. **Add toast notifications** (e.g., `sonner` or custom) for success/error feedback.
 6. **Profile page** – display `/users/me` and assigned projects.
 7. **Improve error handling** – user‑friendly messages instead of `alert()`.
