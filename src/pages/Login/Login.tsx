@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,18 +19,24 @@ type FormData = z.infer<typeof schema>;
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<FormData>({
+  const [serverError, setServerError] = useState<string | null>(null); 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
+    setServerError(null); 
     try {
       const res = await api.post('/auth/login', data);
       const { access_token, user } = res.data;
       login(access_token, user);
       navigate('/dashboard');
     } catch (err: any) {
-      setError('root', { message: err.response?.data?.message || 'Login failed' });
+      setServerError(err.response?.data?.message || 'Login failed. Please try again.');
     }
   };
 
@@ -38,9 +45,12 @@ export default function Login() {
       <div className={styles.card}>
         <h1 className={styles.title}>Project Management System</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Input label="Email" {...register('email')} error={errors.email?.message} />
+          <Input label="Email" {...register('email')} error={errors.email?.message} onChange={() => setServerError(null)} />
           <Input label="Password" type="password" {...register('password')} error={errors.password?.message} />
-          {errors.root && <div className={styles.error}>{errors.root.message}</div>}
+          
+          {/* Persistent server error message */}
+          {serverError && <div className={styles.error}>{serverError}</div>}
+          
           <Button type="submit" loading={isSubmitting}>Login</Button>
         </form>
         <div className={styles.testCreds}>superadmin@test.com / password123</div>
