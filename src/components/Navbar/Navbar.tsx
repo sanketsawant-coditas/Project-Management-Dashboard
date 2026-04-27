@@ -29,10 +29,11 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}>Project Dashboard</div>
-      <div className={styles.links}>
+        <div className={styles.links}>
         <Link to="/dashboard">Dashboard</Link>
         {(user.role === 'admin' || user.role === 'super-admin') && <Link to="/users">Users</Link>}
         <Link to="/projects">Projects</Link>
+        <Link to="/profile">Profile</Link>  
       </div>
       <div className={styles.userInfo}>
         <span className={styles.role}>{user.role}</span>

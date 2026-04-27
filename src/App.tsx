@@ -5,8 +5,8 @@ import Navbar from '@/components/Navbar/Navbar';
 import Login from '@/pages/Login/Login';
 import UsersList from '@/pages/users/UsersList';
 import ProjectsList from '@/pages/projects/ProjectsList';
-
-const Dashboard = () => <div>Dashboard (coming soon)</div>;
+import Dashboard from '@/pages/Dashboard/Dashboard';
+import Profile from '@/pages/Profile/Profile';
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
                     <Route path="/users" element={<UsersList />} />
                     <Route path="/projects" element={<ProjectsList />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="/profile" element={<Profile />} />
                   </Routes>
                 </div>
               </div>

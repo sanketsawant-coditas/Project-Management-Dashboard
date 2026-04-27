@@ -1,0 +1,8 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.container { padding: $spacing-6; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: $spacing-4; margin-top: $spacing-6; }
+.card { @include card; }
+.deadlines { margin-top: $spacing-8; ul { list-style: none; padding: 0; li { padding: $spacing-2; border-bottom: 1px solid $gray-200; } } }
+.loading { @include flex-center; height: 200px; }
