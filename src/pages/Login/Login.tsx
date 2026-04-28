@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,39 +19,60 @@ type FormData = z.infer<typeof schema>;
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [serverError, setServerError] = useState<string | null>(null); 
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [lastAttemptCredentials, setLastAttemptCredentials] = useState<FormData | null>(null);
+  const [fieldsChanged, setFieldsChanged] = useState(false);
+
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: { email: '', password: '' },
   });
 
+  const watchedEmail = watch('email');
+  const watchedPassword = watch('password');
+
+  useEffect(() => {
+    if (lastAttemptCredentials) {
+      const changed =
+        watchedEmail !== lastAttemptCredentials.email ||
+        watchedPassword !== lastAttemptCredentials.password;
+      setFieldsChanged(changed);
+    } else {
+      setFieldsChanged(false);
+    }
+  }, [watchedEmail, watchedPassword, lastAttemptCredentials]);
+
   const onSubmit = async (data: FormData) => {
-    setServerError(null); 
+    setServerError(null);
     try {
       const res = await api.post('/auth/login', data);
       const { access_token, user } = res.data;
       login(access_token, user);
       navigate('/dashboard');
     } catch (err: any) {
+      setLastAttemptCredentials(data);
       setServerError(err.response?.data?.message || 'Login failed. Please try again.');
     }
   };
+
+  const isButtonDisabled = isSubmitting || (lastAttemptCredentials !== null && !fieldsChanged);
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>Project Management System</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Input label="Email" {...register('email')} error={errors.email?.message} onChange={() => setServerError(null)} />
-          <Input label="Password" type="password" {...register('password')} error={errors.password?.message} />
-          
-          {/* Persistent server error message */}
+          <Input label="Email" {...register('email')} error={errors.email?.message} autoComplete="off" />
+          <Input label="Password" type="password" {...register('password')} error={errors.password?.message} autoComplete="off" />
           {serverError && <div className={styles.error}>{serverError}</div>}
-          
-          <Button type="submit" loading={isSubmitting}>Login</Button>
+          <Button type="submit" loading={isSubmitting} disabled={isButtonDisabled}>
+            Login
+          </Button>
         </form>
         <div className={styles.testCreds}>superadmin@test.com / password123</div>
       </div>

@@ -7,6 +7,7 @@ import UsersList from '@/pages/users/UsersList';
 import ProjectsList from '@/pages/projects/ProjectsList';
 import Dashboard from '@/pages/Dashboard/Dashboard';
 import Profile from '@/pages/Profile/Profile';
+import ProjectDetails from './pages/projects/ProjectDetails';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
                     <Route path="/projects" element={<ProjectsList />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/projects/:id" element={<ProjectDetails />} />
                   </Routes>
                 </div>
               </div>

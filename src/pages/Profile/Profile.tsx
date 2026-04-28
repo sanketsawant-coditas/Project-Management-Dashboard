@@ -30,16 +30,16 @@ export default function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Get current user profile
+        // 1. Get current user profile
         const res = await api.get('/users/me');
-        setProfile(res.data);
+        const userData = res.data;
+        setProfile(userData);
 
-        // Fetch all projects and filter those where user is a team member
-        // (if backend doesn't provide endpoint for user's projects)
+        // 2. Fetch all projects and filter those where user is a member
         const projectsRes = await api.get('/projects?limit=100');
-        const projects = projectsRes.data.projects || projectsRes.data;
-        const userProjects = projects.filter((p: any) =>
-          p.teamMembers?.some((member: any) => member.id === res.data.id)
+        const allProjects = projectsRes.data.data || []; // ✅ array under "data"
+        const userProjects = allProjects.filter((project: any) =>
+          project.members?.some((member: any) => member.userId === userData.id)
         );
         setAssignedProjects(userProjects);
       } catch (error) {
@@ -51,6 +51,17 @@ export default function Profile() {
     fetchProfile();
   }, []);
 
+  const formatStatus = (status: string) => {
+    const map: Record<string, string> = {
+      in_progress: 'In Progress',
+      on_hold: 'On Hold',
+      planning: 'Planning',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
+    };
+    return map[status] || status;
+  };
+
   if (loading) return <div className={styles.loading}>Loading profile...</div>;
   if (!profile) return <div className={styles.error}>Unable to load profile</div>;
 
@@ -60,14 +71,32 @@ export default function Profile() {
         <div className={styles.header}>
           <div className={styles.avatar}>👤</div>
           <h1>{profile.name}</h1>
-          <Badge variant={profile.role === 'super-admin' ? 'warning' : profile.role === 'admin' ? 'success' : 'default'}>
+          <Badge
+            variant={
+              profile.role === 'super-admin'
+                ? 'warning'
+                : profile.role === 'admin'
+                ? 'success'
+                : 'default'
+            }
+          >
             {profile.role}
           </Badge>
         </div>
         <div className={styles.info}>
-          <p><strong>Email:</strong> {profile.email}</p>
-          <p><strong>Status:</strong> <Badge variant={profile.status === 'active' ? 'success' : 'danger'}>{profile.status}</Badge></p>
-          <p><strong>Member since:</strong> {profile.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'N/A'}</p>
+          <p>
+            <strong>Email:</strong> {profile.email}
+          </p>
+          <p>
+            <strong>Status:</strong>{' '}
+            <Badge variant={profile.status === 'active' ? 'success' : 'danger'}>
+              {profile.status}
+            </Badge>
+          </p>
+          <p>
+            <strong>Member since:</strong>{' '}
+            {profile.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'N/A'}
+          </p>
         </div>
       </div>
 
@@ -82,12 +111,15 @@ export default function Profile() {
                 <div className={styles.projectInfo}>
                   <strong>{project.name}</strong>
                   <div className={styles.badges}>
-                    <Badge variant={project.status}>{project.status}</Badge>
-                    <Badge variant={project.priority}>{project.priority}</Badge>
+                    <Badge variant="default">{formatStatus(project.status)}</Badge>
+                    <Badge variant="default">{project.priority}</Badge>
                   </div>
                 </div>
                 <div className={styles.progress}>
-                  <div className={styles.progressBar} style={{ width: `${project.progress}%` }}></div>
+                  <div
+                    className={styles.progressBar}
+                    style={{ width: `${project.progress}%` }}
+                  ></div>
                   <span>{project.progress}%</span>
                 </div>
               </div>
