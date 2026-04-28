@@ -4,6 +4,7 @@ import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
 import ProjectForm from './ProjectForm';
+import ProjectModal from './ProjectModal';
 import styles from './ProjectsList.module.scss';
 
 interface Project {
@@ -14,7 +15,13 @@ interface Project {
   priority: string;
   progress: number;
   ownerName: string;
-  members: Array<{ userId: string; userName: string; projectRole: string }>;
+  members: Array<{
+    userId: string;
+    userName: string;
+    userRole: string;
+    projectRole: string;
+    joinedAt: string;
+  }>;
   startDate: string;
   endDate?: string;
   technologies?: string[];
@@ -31,6 +38,7 @@ export default function ProjectsList() {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [modalProject, setModalProject] = useState<Project | null>(null);
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -39,7 +47,6 @@ export default function ProjectsList() {
       if (statusFilter) url += `&status=${statusFilter}`;
       if (priorityFilter) url += `&priority=${priorityFilter}`;
       const res = await api.get(url);
-      // API returns { data: [...], total, page, limit, totalPages }
       setProjects(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
     } catch (error) {
@@ -145,7 +152,11 @@ export default function ProjectsList() {
 
       <div className={styles.grid}>
         {projects.map((p) => (
-          <div key={p.id} className={styles.card}>
+          <div
+            key={p.id}
+            className={styles.card}
+            onClick={() => setModalProject(p)}
+          >
             <div className={styles.cardHeader}>
               <h3>{p.name}</h3>
               <div className={styles.badges}>
@@ -162,11 +173,12 @@ export default function ProjectsList() {
               <div>Team: {p.members?.length || 0} members</div>
               <div>Start: {new Date(p.startDate).toLocaleDateString()}</div>
             </div>
-            <div className={styles.actions}>
+            <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
               {canEdit && (
                 <Button
                   variant="secondary"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setEditingProject(p);
                     setShowForm(true);
                   }}
@@ -175,7 +187,13 @@ export default function ProjectsList() {
                 </Button>
               )}
               {canDelete && (
-                <Button variant="danger" onClick={() => handleDelete(p.id)}>
+                <Button
+                  variant="danger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(p.id);
+                  }}
+                >
                   Delete
                 </Button>
               )}
@@ -203,6 +221,19 @@ export default function ProjectsList() {
             setShowForm(false);
             fetchProjects();
           }}
+        />
+      )}
+
+      {modalProject && (
+        <ProjectModal
+          project={modalProject}
+          onClose={() => setModalProject(null)}
+          onEdit={() => {
+            setModalProject(null);
+            setEditingProject(modalProject);
+            setShowForm(true);
+          }}
+          canEdit={canEdit}
         />
       )}
     </div>

@@ -74,7 +74,7 @@ export default function Login() {
             Login
           </Button>
         </form>
-        <div className={styles.testCreds}>superadmin@test.com / password123</div>
+        <div className={styles.testCreds}>Forgot Password?</div>
       </div>
     </div>
   );

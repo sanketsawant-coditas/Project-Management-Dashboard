@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import styles from './ProjectForm.module.scss';
@@ -19,41 +22,76 @@ interface Project {
 interface Props {
   project?: Project | null;
   onClose: () => void;
+  onSuccess?: (newProject: Project) => void;
 }
 
-export default function ProjectForm({ project, onClose }: Props) {
-  const [form, setForm] = useState({
-    name: project?.name || '',
-    description: project?.description || '',
-    status: project?.status || 'planning',
-    priority: project?.priority || 'medium',
-    progress: project?.progress || 0,
-    startDate: project?.startDate ? project.startDate.split('T')[0] : '',
-    endDate: project?.endDate ? project.endDate.split('T')[0] : '',
-    budget: project?.budget || '',
-    technologies: project?.technologies?.join(', ') || '',
-  });
-  const [loading, setLoading] = useState(false);
+const projectSchema = z.object({
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  status: z.enum(['planning', 'in_progress', 'on_hold', 'completed', 'cancelled']),
+  priority: z.enum(['low', 'medium', 'high', 'urgent']),
+  progress: z.number().min(0).max(100).optional(),
+  startDate: z.string().min(1, 'Start date is required'),
+  endDate: z.string().optional(),
+  budget: z.number().optional(),
+  technologies: z.string().optional(), // will be split into array
+});
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+type FormData = z.infer<typeof projectSchema>;
+
+export default function ProjectForm({ project, onClose, onSuccess }: Props) {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      status: 'planning',
+      priority: 'medium',
+      progress: 0,
+      startDate: '',
+      endDate: '',
+      budget: undefined,
+      technologies: '',
+    },
+  });
+
+  useEffect(() => {
+    if (project) {
+      setValue('name', project.name);
+      setValue('description', project.description);
+      setValue('status', project.status as any);
+      setValue('priority', project.priority as any);
+      setValue('progress', project.progress);
+      setValue('startDate', project.startDate.split('T')[0]);
+      if (project.endDate) setValue('endDate', project.endDate.split('T')[0]);
+      if (project.budget) setValue('budget', project.budget);
+      if (project.technologies) setValue('technologies', project.technologies.join(', '));
+    }
+  }, [project, setValue]);
+
+  const onSubmit = async (data: FormData) => {
     try {
       const payload = {
-        ...form,
-        budget: form.budget ? Number(form.budget) : undefined,
-        technologies: form.technologies ? form.technologies.split(',').map(t => t.trim()) : [],
+        ...data,
+        technologies: data.technologies ? data.technologies.split(',').map(t => t.trim()) : [],
+        budget: data.budget ? Number(data.budget) : undefined,
+        progress: data.progress || 0,
       };
+      let response;
       if (project) {
-        await api.patch(`/projects/${project.id}`, payload);
+        response = await api.patch(`/projects/${project.id}`, payload);
       } else {
-        await api.post('/projects', payload);
+        response = await api.post('/projects', payload);
       }
+      if (onSuccess && !project) onSuccess(response.data);
       onClose();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to save project');
     }
   };
 
@@ -61,76 +99,59 @@ export default function ProjectForm({ project, onClose }: Props) {
     <div className={styles.modal}>
       <div className={styles.modalContent}>
         <h2>{project ? 'Edit Project' : 'Create Project'}</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            placeholder="Name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
-          <textarea
-            placeholder="Description"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            required
-          />
-          <select
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value })}
-          >
-            <option value="planning">Planning</option>
-            <option value="in_progress">In Progress</option>
-            <option value="on_hold">On Hold</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <select
-            value={form.priority}
-            onChange={(e) => setForm({ ...form, priority: e.target.value })}
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="urgent">Urgent</option>
-          </select>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div>
+            <input placeholder="Name" {...register('name')} />
+            {errors.name && <span className={styles.error}>{errors.name.message}</span>}
+          </div>
+          <div>
+            <textarea placeholder="Description" {...register('description')} rows={3} />
+            {errors.description && <span className={styles.error}>{errors.description.message}</span>}
+          </div>
+          <div>
+            <select {...register('status')}>
+              <option value="planning">Planning</option>
+              <option value="in_progress">In Progress</option>
+              <option value="on_hold">On Hold</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div>
+            <select {...register('priority')}>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
           {project && (
-            <input
-              type="number"
-              placeholder="Progress (0-100)"
-              value={form.progress}
-              onChange={(e) => setForm({ ...form, progress: Number(e.target.value) })}
-            />
+            <div>
+              <input type="number" placeholder="Progress (0-100)" {...register('progress', { valueAsNumber: true })} />
+              {errors.progress && <span className={styles.error}>{errors.progress.message}</span>}
+            </div>
           )}
-          <input
-            type="date"
-            placeholder="Start Date"
-            value={form.startDate}
-            onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-            required
-          />
-          <input
-            type="date"
-            placeholder="End Date"
-            value={form.endDate}
-            onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-          />
-          <input
-            type="number"
-            placeholder="Budget"
-            value={form.budget}
-            onChange={(e) => setForm({ ...form, budget: e.target.value })}
-          />
-          <input
-            placeholder="Technologies (comma separated)"
-            value={form.technologies}
-            onChange={(e) => setForm({ ...form, technologies: e.target.value })}
-          />
-          <Button type="submit" loading={loading}>
-            Save
-          </Button>
-          <Button variant="secondary" type="button" onClick={onClose}>
-            Cancel
-          </Button>
+          <div>
+            <input type="date" {...register('startDate')} />
+            {errors.startDate && <span className={styles.error}>{errors.startDate.message}</span>}
+          </div>
+          <div>
+            <input type="date" {...register('endDate')} />
+          </div>
+          <div>
+            <input type="number" placeholder="Budget" {...register('budget', { valueAsNumber: true })} />
+          </div>
+          <div>
+            <input placeholder="Technologies (comma separated)" {...register('technologies')} />
+          </div>
+          <div className={styles.buttons}>
+            <Button type="submit" loading={isSubmitting}>
+              {project ? 'Update' : 'Create'}
+            </Button>
+            <Button variant="secondary" type="button" onClick={onClose}>
+              Cancel
+            </Button>
+          </div>
         </form>
       </div>
     </div>

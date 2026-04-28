@@ -23,9 +23,7 @@ export default function Navbar() {
       setTimeout(() => setError(null), 5000);
     }
   };
-
   if (!user) return null;
-
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}><Link to="/dashboard">Project Dashboard</Link></div>

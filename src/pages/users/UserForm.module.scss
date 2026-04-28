@@ -45,4 +45,11 @@
     font-size: $text-sm;
     margin-bottom: $spacing-2;
   }
+
+  .error {
+  color: $danger;
+  font-size: $text-xs;
+  margin-top: $spacing-1;
+  display: block;
+}
 }

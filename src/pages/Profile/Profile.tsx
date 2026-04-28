@@ -22,7 +22,6 @@ interface Project {
 }
 
 export default function Profile() {
-  const { user: authUser } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [assignedProjects, setAssignedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,14 +29,11 @@ export default function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // 1. Get current user profile
         const res = await api.get('/users/me');
         const userData = res.data;
         setProfile(userData);
-
-        // 2. Fetch all projects and filter those where user is a member
         const projectsRes = await api.get('/projects?limit=100');
-        const allProjects = projectsRes.data.data || []; // ✅ array under "data"
+        const allProjects = projectsRes.data.data || []; 
         const userProjects = allProjects.filter((project: any) =>
           project.members?.some((member: any) => member.userId === userData.id)
         );

@@ -1,0 +1,161 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  @include flex-center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  background: white;
+  border-radius: $radius-xl;
+  max-width: 650px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $gray-100;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $gray-400;
+    border-radius: 4px;
+    &:hover {
+      background: $gray-500;
+    }
+  }
+}
+
+// Header with gradient or accent
+.modalContent > h2 {
+  font-size: $text-2xl;
+  font-weight: 700;
+  padding: $spacing-4 $spacing-6;
+  margin: 0;
+  background: linear-gradient(135deg, $gray-50, white);
+  border-bottom: 2px solid $primary;
+  color: $gray-800;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.section {
+  padding: $spacing-4 $spacing-6;
+  border-bottom: 1px solid $gray-200;
+  
+  &:last-of-type {
+    border-bottom: none;
+  }
+  
+  p {
+    margin: $spacing-2 0;
+    line-height: 1.5;
+    color: $gray-700;
+    
+    strong {
+      color: $gray-800;
+      font-weight: 600;
+      min-width: 110px;
+      display: inline-block;
+    }
+  }
+}
+
+.memberList {
+  list-style: none;
+  padding: 0;
+  margin: $spacing-2 0 0;
+  
+  li {
+    padding: $spacing-2 $spacing-3;
+    background: $gray-50;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: $text-sm;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.memberRole {
+  color: $primary;
+  font-weight: 500;
+  background: rgba($primary, 0.1);
+  padding: 2px 8px;
+  border-radius: $radius-xl;
+  font-size: $text-xs;
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-3;
+  justify-content: flex-end;
+  padding: $spacing-4 $spacing-6;
+  background: $gray-50;
+  border-top: 1px solid $gray-200;
+  position: sticky;
+  bottom: 0;
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive tweaks
+@media (max-width: 640px) {
+  .modalContent {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .section {
+    padding: $spacing-3;
+    
+    p strong {
+      display: block;
+      margin-bottom: $spacing-1;
+    }
+  }
+  
+  .memberList li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-1;
+  }
+}

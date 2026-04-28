@@ -3,15 +3,15 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
-import styles from './UsersList.module.scss';
 import UserForm from './UserForm';
+import styles from './UsersList.module.scss';
 
 interface User {
   id: string;
   name: string;
   email: string;
   role: string;
-  status: 'active' | 'inactive';
+  isActive: boolean;
 }
 
 export default function UsersList() {
@@ -28,19 +28,41 @@ export default function UsersList() {
     setLoading(true);
     try {
       let url = `/users?page=${page}&limit=10`;
-      if (roleFilter) url = `/users/role/${roleFilter}?page=${page}&limit=10`;
+      if (roleFilter) {
+        url = `/users/role/${roleFilter}?page=${page}&limit=10`;
+      }
       const res = await api.get(url);
       
-      // ✅ Handle paginated response
-      const usersArray = res.data.data || res.data.users || [];
+      let usersArray: User[] = [];
+      let totalPagesFromApi = 1;
+      
+      if (res.data.data && Array.isArray(res.data.data)) {
+        usersArray = res.data.data;
+        totalPagesFromApi = res.data.totalPages || 1;
+      } else if (Array.isArray(res.data)) {
+        usersArray = res.data;
+        totalPagesFromApi = 1;
+      } else if (res.data.users && Array.isArray(res.data.users)) {
+        usersArray = res.data.users;
+        totalPagesFromApi = res.data.totalPages || 1;
+      } else {
+        usersArray = [];
+      }
+      
       setUsers(usersArray);
-      setTotalPages(res.data.totalPages || 1);
+      setTotalPages(totalPagesFromApi);
     } catch (error) {
       console.error(error);
+      setUsers([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setPage(1);
+  }, [roleFilter]);
 
   useEffect(() => {
     fetchUsers();
@@ -51,7 +73,6 @@ export default function UsersList() {
     await api.delete(`/users/${id}`);
     fetchUsers();
   };
-
   const handleToggleStatus = async (id: string) => {
     await api.patch(`/users/${id}/toggle-status`);
     fetchUsers();
@@ -83,24 +104,42 @@ export default function UsersList() {
       {loading && <div>Loading...</div>}
       <table className={styles.table}>
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
           {users.map((u) => (
             <tr key={u.id}>
               <td>{u.name}</td>
               <td>{u.email}</td>
-              <td><Badge variant={u.role === 'super-admin' ? 'warning' : u.role === 'admin' ? 'success' : 'default'}>{u.role}</Badge></td>
-              <td><Badge variant={u.status === 'active' ? 'success' : 'danger'}>{u.status}</Badge></td>
+              <td>
+                <Badge variant={u.role === 'super-admin' ? 'warning' : u.role === 'admin' ? 'success' : 'default'}>
+                  {u.role}
+                </Badge>
+              </td>
+              <td>
+                <Badge variant={u.isActive ? 'success' : 'danger'}>
+                  {u.isActive ? 'Active' : 'Inactive'}
+                </Badge>
+              </td>
               <td>
                 {(isSuperAdmin || isAdmin) && <Button variant="secondary" onClick={() => { setEditingUser(u); setShowForm(true); }}>Edit</Button>}
-                {(isSuperAdmin || isAdmin) && <Button variant="secondary" onClick={() => handleToggleStatus(u.id)}>Toggle Status</Button>}
+                {(isSuperAdmin || isAdmin) && (
+                  <Button variant="secondary" onClick={() => handleToggleStatus(u.id)}>
+                    Toggle Status
+                  </Button>
+                )}
                 {isSuperAdmin && <Button variant="danger" onClick={() => handleDelete(u.id)}>Delete</Button>}
-               </td>
-             </tr>
+              </td>
+            </tr>
           ))}
         </tbody>
-       </table>
+      </table>
       <div className={styles.pagination}>
         <button disabled={page === 1} onClick={() => setPage(p => p-1)}>Prev</button>
         <span>Page {page} of {totalPages}</span>
