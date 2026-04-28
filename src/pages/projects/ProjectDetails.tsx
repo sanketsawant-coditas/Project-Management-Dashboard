@@ -6,35 +6,9 @@ import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
 import ProjectForm from './ProjectForm';
 import styles from './ProjectDetails.module.scss';
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  priority: string;
-  progress: number;
-  ownerName: string;
-  members: Array<{
-    userId: string;
-    userName: string;
-    userRole: string;
-    projectRole: string;
-    joinedAt: string;
-  }>;
-  startDate: string;
-  endDate?: string;
-  technologies?: string[];
-  budget?: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import type User from '@/types/user.types';
+import type { Project } from '@/types/project.types';
+import { formatPriority, formatStatus, priorityColor, statusColor } from '@/utils/formatters';
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
@@ -101,42 +75,6 @@ export default function ProjectDetails() {
   const refreshProject = async () => {
     const res = await api.get(`/projects/${id}`);
     setProject(res.data);
-  };
-
-  const formatStatus = (status: string) => {
-    const map: Record<string, string> = {
-      in_progress: 'In Progress',
-      on_hold: 'On Hold',
-      planning: 'Planning',
-      completed: 'Completed',
-      cancelled: 'Cancelled',
-    };
-    return map[status] || status;
-  };
-
-  const formatPriority = (priority: string) => {
-    const map: Record<string, string> = {
-      high: 'High',
-      medium: 'Medium',
-      low: 'Low',
-      urgent: 'Urgent',
-    };
-    return map[priority] || priority;
-  };
-
-  const statusColor: Record<string, string> = {
-    planning: 'default',
-    in_progress: 'warning',
-    on_hold: 'default',
-    completed: 'success',
-    cancelled: 'danger',
-  };
-
-  const priorityColor: Record<string, string> = {
-    low: 'default',
-    medium: 'default',
-    high: 'warning',
-    urgent: 'danger',
   };
 
   if (loading) return <div className={styles.loading}>Loading project...</div>;

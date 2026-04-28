@@ -6,14 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import styles from './UserForm.module.scss';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-}
+import type User from '@/types/user.types';
 
 interface Props {
   user?: User | null;

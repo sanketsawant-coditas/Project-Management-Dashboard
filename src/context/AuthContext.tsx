@@ -1,13 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '@/api/axios';
+import type User from '@/types/user.types';
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'super-admin' | 'admin' | 'user';
-  status?: 'active' | 'inactive';
-}
 
 interface AuthContextType {
   user: User | null;
@@ -26,7 +20,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (token) {
+      if (token && !user) {
         try {
           const res = await api.get('/users/me');
           setUser(res.data);
@@ -38,26 +32,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     };
     fetchUser();
-  }, [token]);
+  }, [token, user]);
 
   const login = (newToken: string, userData: User) => {
     localStorage.setItem('token', newToken);
     setToken(newToken);
-    setUser(userData);
+    setUser(userData); 
   };
 
-  const logout = async (): Promise<void> => {
-    if (!token) {
-      localStorage.removeItem('token');
-      setToken(null);
-      setUser(null);
-      return;
-    }
+  const logout = async () => {
     try {
       await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout API error:', error);
-      throw error;
     } finally {
       localStorage.removeItem('token');
       setToken(null);

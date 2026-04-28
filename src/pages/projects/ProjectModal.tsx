@@ -1,28 +1,7 @@
 import { Button } from '@/components/Button/Button';
 import styles from './ProjectModal.module.scss';
+import type { Project } from '@/types/project.types';
 
-interface Member {
-  userId: string;
-  userName: string;
-  userRole: string;
-  projectRole: string;
-  joinedAt: string;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  priority: string;
-  progress: number;
-  ownerName: string;
-  members: Member[];
-  startDate: string;
-  endDate?: string;
-  budget?: number;
-  technologies?: string[];
-}
 
 interface Props {
   project: Project;

@@ -3,30 +3,12 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
+import styles from './ProjectsList.module.scss';
+import type { Project } from '@/types/project.types';
+import { formatPriority, formatStatus, priorityColor, statusColor } from '@/utils/formatters';
 import ProjectForm from './ProjectForm';
 import ProjectModal from './ProjectModal';
-import styles from './ProjectsList.module.scss';
 
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  priority: string;
-  progress: number;
-  ownerName: string;
-  members: Array<{
-    userId: string;
-    userName: string;
-    userRole: string;
-    projectRole: string;
-    joinedAt: string;
-  }>;
-  startDate: string;
-  endDate?: string;
-  technologies?: string[];
-  budget?: number;
-}
 
 export default function ProjectsList() {
   const { user } = useAuth();
@@ -69,41 +51,7 @@ export default function ProjectsList() {
   const canEdit = user?.role === 'admin' || user?.role === 'super-admin';
   const canDelete = user?.role === 'super-admin';
 
-  const formatStatus = (status: string) => {
-    const map: Record<string, string> = {
-      in_progress: 'In Progress',
-      on_hold: 'On Hold',
-      planning: 'Planning',
-      completed: 'Completed',
-      cancelled: 'Cancelled',
-    };
-    return map[status] || status;
-  };
 
-  const formatPriority = (priority: string) => {
-    const map: Record<string, string> = {
-      high: 'High',
-      medium: 'Medium',
-      low: 'Low',
-      urgent: 'Urgent',
-    };
-    return map[priority] || priority;
-  };
-
-  const statusColor: Record<string, string> = {
-    planning: 'default',
-    in_progress: 'warning',
-    on_hold: 'default',
-    completed: 'success',
-    cancelled: 'danger',
-  };
-
-  const priorityColor: Record<string, string> = {
-    low: 'default',
-    medium: 'default',
-    high: 'warning',
-    urgent: 'danger',
-  };
 
   return (
     <div className={styles.container}>

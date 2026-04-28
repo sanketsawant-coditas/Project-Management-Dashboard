@@ -4,10 +4,10 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Navbar from '@/components/Navbar/Navbar';
 import Login from '@/pages/Login/Login';
 import UsersList from '@/pages/users/UsersList';
-import ProjectsList from '@/pages/projects/ProjectsList';
+import ProjectsList from '@/pages/Projects/ProjectsList';
 import Dashboard from '@/pages/Dashboard/Dashboard';
 import Profile from '@/pages/Profile/Profile';
-import ProjectDetails from './pages/projects/ProjectDetails';
+import ProjectDetails from './pages/Projects/ProjectDetails';
 
 function App() {
   return (

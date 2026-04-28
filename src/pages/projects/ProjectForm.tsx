@@ -5,19 +5,7 @@ import { z } from 'zod';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import styles from './ProjectForm.module.scss';
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  priority: string;
-  progress: number;
-  startDate: string;
-  endDate?: string;
-  budget?: number;
-  technologies?: string[];
-}
+import type { Project } from '@/types/project.types';
 
 interface Props {
   project?: Project | null;

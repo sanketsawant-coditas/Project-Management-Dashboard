@@ -5,14 +5,7 @@ import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
 import UserForm from './UserForm';
 import styles from './UsersList.module.scss';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-}
+import type User from '@/types/user.types';
 
 export default function UsersList() {
   const { user: currentUser } = useAuth();
