@@ -1,0 +1,28 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  @include flex-center;
+  z-index: 1000;
+}
+.modalContent {
+  background: white;
+  padding: $spacing-6;
+  border-radius: $radius-lg;
+  width: 500px;
+  max-width: 90%;
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    input, textarea, select {
+      padding: $spacing-2;
+      border: 1px solid $gray-300;
+      border-radius: $radius-md;
+    }
+    textarea { min-height: 80px; }
+  }
+}

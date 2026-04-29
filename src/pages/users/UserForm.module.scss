@@ -1,0 +1,55 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: $spacing-6;
+  border-radius: $radius-lg;
+  width: 450px;
+  max-width: 90%;
+
+  h2 {
+    margin-bottom: $spacing-4;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  input,
+  select {
+    padding: $spacing-2 $spacing-3;
+    border: 1px solid $gray-300;
+    border-radius: $radius-md;
+    font-size: $text-sm;
+  }
+
+  .buttons {
+    display: flex;
+    gap: $spacing-2;
+    margin-top: $spacing-2;
+  }
+
+  .error {
+    color: $danger;
+    font-size: $text-sm;
+    margin-bottom: $spacing-2;
+  }
+
+  .error {
+  color: $danger;
+  font-size: $text-xs;
+  margin-top: $spacing-1;
+  display: block;
+}
+}

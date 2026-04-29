@@ -1,0 +1,18 @@
+import React from 'react';
+import styles from './Input.module.scss';
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+}
+
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, ...props }, ref) => (
+    <div className={styles.wrapper}>
+      {label && <label className={styles.label}>{label}</label>}
+      <input ref={ref} className={`${styles.input} ${error ? styles.error : ''}`} {...props} />
+      {error && <span className={styles.errorMsg}>{error}</span>}
+    </div>
+  )
+);
+Input.displayName = 'Input';

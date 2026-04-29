@@ -1,0 +1,97 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.container {
+  padding: $spacing-6;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $spacing-4;
+  margin-top: $spacing-6;
+}
+
+.card {
+  @include card;
+  
+  h3 {
+    font-size: $text-base;
+    font-weight: 600;
+    margin-bottom: $spacing-3;
+    color: $gray-700;
+    border-bottom: 1px solid $gray-200;
+    padding-bottom: $spacing-2;
+  }
+}
+
+.number {
+  font-size: $text-3xl;
+  font-weight: 700;
+  color: $primary;
+  margin-top: $spacing-2;
+  text-align: center;
+}
+
+.statItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-2 0;
+  border-bottom: 1px solid $gray-100;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  .statLabel {
+    font-weight: 500;
+    color: $gray-700;
+    text-transform: capitalize;
+  }
+  
+  .statCount {
+    font-weight: 600;
+    color: $primary;
+    background: rgba($primary, 0.1);
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-xl;
+    font-size: $text-sm;
+    min-width: 32px;
+    text-align: center;
+  }
+}
+
+.deadlines {
+  margin-top: $spacing-8;
+  
+  h2 {
+    font-size: $text-xl;
+    font-weight: 600;
+    margin-bottom: $spacing-4;
+    color: $gray-800;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    
+    li {
+      padding: $spacing-2 $spacing-3;
+      border-bottom: 1px solid $gray-200;
+      background: $gray-50;
+      border-radius: $radius-md;
+      margin-bottom: $spacing-2;
+      
+      &:hover {
+        background: $gray-100;
+      }
+    }
+  }
+}
+
+.loading {
+  @include flex-center;
+  height: 200px;
+  color: $gray-500;
+}
