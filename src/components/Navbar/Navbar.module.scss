@@ -3,10 +3,20 @@
 
 .navbar {
   @include flex-between;
+    position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
   background: white;
   padding: $spacing-3 $spacing-6;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   margin-bottom: $spacing-6;
+}
+
+.navbar.scrolled {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .logo {
