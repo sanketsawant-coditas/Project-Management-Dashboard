@@ -1,22 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import styles from './UserForm.module.scss';
 import type { UserFormProps } from './user.type';
-
-const userSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().optional(),
-  role: z.enum(['user', 'admin', 'super-admin']),
-  isActive: z.boolean().optional(),
-});
-
-type FormData = z.infer<typeof userSchema>;
+import { userSchema, type UserFormData } from '@/schemas/user.schema';
 
 export default function UserForm({ user, onClose }: UserFormProps) {
   const { user: currentUser } = useAuth();
@@ -25,7 +15,7 @@ export default function UserForm({ user, onClose }: UserFormProps) {
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({
+  } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: {
       name: '',
@@ -46,7 +36,7 @@ export default function UserForm({ user, onClose }: UserFormProps) {
     }
   }, [user, setValue]);
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: UserFormData) => {
     try {
       if (user) {
         const payload: any = {

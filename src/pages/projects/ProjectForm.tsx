@@ -1,26 +1,11 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import styles from './ProjectForm.module.scss';
+import { projectSchema, type FormData } from '@/schemas/project.schema';
 import type { ProjectFormProps } from './props.types';
-
-
-const projectSchema = z.object({
-  name: z.string().min(3, 'Name must be at least 3 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  status: z.enum(['planning', 'in_progress', 'on_hold', 'completed', 'cancelled']),
-  priority: z.enum(['low', 'medium', 'high', 'urgent']),
-  progress: z.number().min(0).max(100).optional(),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().optional(),
-  budget: z.number().optional(),
-  technologies: z.string().optional(), // will be split into array
-});
-
-type FormData = z.infer<typeof projectSchema>;
 
 export default function ProjectForm({ project, onClose, onSuccess }: ProjectFormProps) {
   const {

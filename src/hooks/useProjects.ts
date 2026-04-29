@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { projectService } from '@/services/projectService';
 import type { Project } from '@/types';
 
-
 export const useProjects = (page: number, limit: number, statusFilter: string, priorityFilter: string) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [totalPages, setTotalPages] = useState(1);

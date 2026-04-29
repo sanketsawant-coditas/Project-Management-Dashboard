@@ -4,36 +4,42 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Navbar from '@/components/Navbar/Navbar';
 import Login from '@/pages/Login/Login';
 import UsersList from '@/pages/users/UsersList';
-import ProjectsList from '@/pages/Projects/ProjectsList';
 import Dashboard from '@/pages/Dashboard/Dashboard';
 import Profile from '@/pages/Profile/Profile';
-import ProjectDetails from './pages/Projects/ProjectDetails';
+import ProjectsList from './pages/projects/ProjectsList';
+import ProjectDetails from './pages/projects/ProjectDetails';
+
+import { Outlet } from 'react-router-dom';
+
+function Layout() {
+  return (
+    <div>
+      <Navbar />
+      <div className="container">
+        <Outlet /> 
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
+        {/* Public route */}
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute>
-              <div>
-                <Navbar />
-                <div className="container">
-                  <Routes>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/users" element={<UsersList />} />
-                    <Route path="/projects" element={<ProjectsList />} />
-                    <Route path="/" element={<Navigate to="/dashboard" />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/projects/:id" element={<ProjectDetails />} />
-                  </Routes>
-                </div>
-              </div>
-            </ProtectedRoute>
-          }
-        />
+
+        {/* Protected routes group */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/users" element={<UsersList />} />
+            <Route path="/projects" element={<ProjectsList />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/projects/:id" element={<ProjectDetails />} />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          </Route>
+        </Route>
       </Routes>
     </AuthProvider>
   );

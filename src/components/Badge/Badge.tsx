@@ -1,9 +1,8 @@
-// src/components/Badge/Badge.tsx
 import React from 'react';
 import styles from './Badge.module.scss';
 
 interface BadgeProps { 
-  variant?: string;  // accept any string
+  variant?: string; 
   children: React.ReactNode; 
 }
 

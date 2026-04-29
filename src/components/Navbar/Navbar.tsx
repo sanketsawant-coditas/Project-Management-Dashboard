@@ -10,7 +10,6 @@ export default function Navbar() {
   const [error, setError] = useState<string | null>(null);
   const navbarRef = useRef<HTMLElement>(null);
 
-  // Add scroll listener to toggle 'scrolled' class
   useEffect(() => {
     const handleScroll = () => {
       if (navbarRef.current) {

@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { userService } from '@/services/userService';
 import type User from '@/types/user.types';
 
-
 export const useUsers = (page: number, limit: number, roleFilter: string) => {
   const [users, setUsers] = useState<User[]>([]);
   const [totalPages, setTotalPages] = useState(1);

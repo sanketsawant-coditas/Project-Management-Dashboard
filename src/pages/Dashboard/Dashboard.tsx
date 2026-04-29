@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/api/axios';
 import styles from './Dashboard.module.scss';
-import type { Statistics } from './Dashboard.type';
+
 import { formatPriority, formatStatus } from '@/utils/formatters';
+import type { Statistics } from './dashboard.type';
 
 export default function Dashboard() {
   const { user } = useAuth();

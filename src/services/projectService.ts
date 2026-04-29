@@ -1,5 +1,5 @@
 import api from '@/api/axios';
-import type { PaginatedResponse } from './type.api';
+import type { PaginatedResponse } from '../types/api.types';
 import type { Project } from '@/types';
 
 

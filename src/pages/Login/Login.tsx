@@ -1,27 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import api from '@/api/axios';
 import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
 import styles from './Login.module.scss';
 import { authService } from '@/services/authService';
+import { loginSchema, type LoginFormData } from '@/schemas/auth.schema';
 
-const schema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type FormData = z.infer<typeof schema>;
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
-  const [lastAttemptCredentials, setLastAttemptCredentials] = useState<FormData | null>(null);
+  const [lastAttemptCredentials, setLastAttemptCredentials] = useState<LoginFormData | null>(null);
   const [fieldsChanged, setFieldsChanged] = useState(false);
 
   const {
@@ -29,8 +22,8 @@ export default function Login() {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
 
@@ -48,7 +41,7 @@ export default function Login() {
     }
   }, [watchedEmail, watchedPassword, lastAttemptCredentials]);
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     setServerError(null);
     try {
       const res = await authService.login(data.email, data.password);

@@ -1,6 +1,6 @@
 import api from '@/api/axios';
 import type User from '@/types/user.types';
-import type { LoginResponse } from './type.api';
+import type { LoginResponse } from '../types/api.types';
 
 
 export const authService = {
