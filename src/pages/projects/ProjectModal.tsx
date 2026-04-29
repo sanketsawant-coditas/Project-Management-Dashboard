@@ -1,14 +1,7 @@
 import { Button } from '@/components/Button/Button';
 import styles from './ProjectModal.module.scss';
-import type { Project } from '@/types/project.types';
+import type { ProjectModalProps } from './props.types';
 
-
-interface Props {
-  project: Project;
-  onClose: () => void;
-  onEdit: () => void;
-  canEdit: boolean;
-}
 
 const formatStatus = (status: string) => {
   const map: Record<string, string> = {
@@ -31,7 +24,7 @@ const formatPriority = (priority: string) => {
   return map[priority] || priority;
 };
 
-export default function ProjectModal({ project, onClose, onEdit, canEdit }: Props) {
+export default function ProjectModal({ project, onClose, onEdit, canEdit }: ProjectModalProps) {
   return (
     <div className={styles.modal} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>

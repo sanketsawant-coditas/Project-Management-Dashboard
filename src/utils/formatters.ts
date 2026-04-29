@@ -1,4 +1,3 @@
-// src/utils/formatters.ts
 export const formatStatus = (status: string): string => {
   const map: Record<string, string> = {
     in_progress: 'In Progress',

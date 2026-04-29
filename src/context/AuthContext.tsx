@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '@/api/axios';
 import type User from '@/types/user.types';
+import { authService } from '@/services/authService';
 
 
 interface AuthContextType {
@@ -22,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const fetchUser = async () => {
       if (token && !user) {
         try {
-          const res = await api.get('/users/me');
+          const res = await authService.getCurrentUser();
           setUser(res.data);
         } catch {
           localStorage.removeItem('token');
@@ -37,12 +38,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (newToken: string, userData: User) => {
     localStorage.setItem('token', newToken);
     setToken(newToken);
-    setUser(userData); 
+    setUser(userData);
   };
 
   const logout = async () => {
     try {
-      await api.post('/auth/logout');
+      await authService.logout();
     } catch (error) {
       console.error('Logout API error:', error);
     } finally {
@@ -59,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;

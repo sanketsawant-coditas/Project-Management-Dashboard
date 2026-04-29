@@ -6,12 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import styles from './UserForm.module.scss';
-import type User from '@/types/user.types';
-
-interface Props {
-  user?: User | null;
-  onClose: () => void;
-}
+import type { UserFormProps } from './user.type';
 
 const userSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -23,7 +18,7 @@ const userSchema = z.object({
 
 type FormData = z.infer<typeof userSchema>;
 
-export default function UserForm({ user, onClose }: Props) {
+export default function UserForm({ user, onClose }: UserFormProps) {
   const { user: currentUser } = useAuth();
   const {
     register,
@@ -41,21 +36,19 @@ export default function UserForm({ user, onClose }: Props) {
     },
   });
 
-  // Populate form when editing
   useEffect(() => {
     if (user) {
       setValue('name', user.name);
       setValue('email', user.email);
       setValue('role', user.role as 'user' | 'admin' | 'super-admin');
       setValue('isActive', user.isActive);
-      setValue('password', ''); // always empty for edit
+      setValue('password', ''); 
     }
   }, [user, setValue]);
 
   const onSubmit = async (data: FormData) => {
     try {
       if (user) {
-        // Edit user – only send fields that are allowed to change
         const payload: any = {
           name: data.name,
           email: data.email,

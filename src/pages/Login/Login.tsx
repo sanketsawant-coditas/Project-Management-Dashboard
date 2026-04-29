@@ -8,6 +8,7 @@ import api from '@/api/axios';
 import { Input } from '@/components/Input/Input';
 import { Button } from '@/components/Button/Button';
 import styles from './Login.module.scss';
+import { authService } from '@/services/authService';
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
@@ -50,7 +51,7 @@ export default function Login() {
   const onSubmit = async (data: FormData) => {
     setServerError(null);
     try {
-      const res = await api.post('/auth/login', data);
+      const res = await authService.login(data.email, data.password);
       const { access_token, user } = res.data;
       login(access_token, user);
       navigate('/dashboard');

@@ -2,36 +2,8 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/api/axios';
 import styles from './Dashboard.module.scss';
-
-interface Statistics {
-  total: number;
-  byStatus: Record<string, number>;
-  byPriority: Record<string, number>;
-  upcomingDeadlines: Array<{ id: string; name: string; endDate: string }>;
-}
-
-// Format status keys: in_progress -> "In Progress", on_hold -> "On Hold"
-const formatStatus = (status: string): string => {
-  const map: Record<string, string> = {
-    in_progress: 'In Progress',
-    on_hold: 'On Hold',
-    planning: 'Planning',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-  };
-  return map[status] || status;
-};
-
-// Format priority keys: high -> "High", urgent -> "Urgent"
-const formatPriority = (priority: string): string => {
-  const map: Record<string, string> = {
-    high: 'High',
-    medium: 'Medium',
-    low: 'Low',
-    urgent: 'Urgent',
-  };
-  return map[priority] || priority;
-};
+import type { Statistics } from './Dashboard.type';
+import { formatPriority, formatStatus } from '@/utils/formatters';
 
 export default function Dashboard() {
   const { user } = useAuth();

@@ -5,13 +5,8 @@ import { z } from 'zod';
 import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import styles from './ProjectForm.module.scss';
-import type { Project } from '@/types/project.types';
+import type { ProjectFormProps } from './props.types';
 
-interface Props {
-  project?: Project | null;
-  onClose: () => void;
-  onSuccess?: (newProject: Project) => void;
-}
 
 const projectSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
@@ -27,7 +22,7 @@ const projectSchema = z.object({
 
 type FormData = z.infer<typeof projectSchema>;
 
-export default function ProjectForm({ project, onClose, onSuccess }: Props) {
+export default function ProjectForm({ project, onClose, onSuccess }: ProjectFormProps) {
   const {
     register,
     handleSubmit,

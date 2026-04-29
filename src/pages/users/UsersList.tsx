@@ -1,78 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import api from '@/api/axios';
 import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
 import UserForm from './UserForm';
+import { useUsers } from '@/hooks/useUsers';
+import { userService } from '@/services/userService';
 import styles from './UsersList.module.scss';
-import type User from '@/types/user.types';
 
 export default function UsersList() {
   const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState<User[]>([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [roleFilter, setRoleFilter] = useState('');
-  const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<any>(null); // will be User | null
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      let url = `/users?page=${page}&limit=10`;
-      if (roleFilter) {
-        url = `/users/role/${roleFilter}?page=${page}&limit=10`;
-      }
-      const res = await api.get(url);
-      
-      let usersArray: User[] = [];
-      let totalPagesFromApi = 1;
-      
-      if (res.data.data && Array.isArray(res.data.data)) {
-        usersArray = res.data.data;
-        totalPagesFromApi = res.data.totalPages || 1;
-      } else if (Array.isArray(res.data)) {
-        usersArray = res.data;
-        totalPagesFromApi = 1;
-      } else if (res.data.users && Array.isArray(res.data.users)) {
-        usersArray = res.data.users;
-        totalPagesFromApi = res.data.totalPages || 1;
-      } else {
-        usersArray = [];
-      }
-      
-      setUsers(usersArray);
-      setTotalPages(totalPagesFromApi);
-    } catch (error) {
-      console.error(error);
-      setUsers([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    setPage(1);
-  }, [roleFilter]);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [page, roleFilter]);
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete user?')) return;
-    await api.delete(`/users/${id}`);
-    fetchUsers();
-  };
-  const handleToggleStatus = async (id: string) => {
-    await api.patch(`/users/${id}/toggle-status`);
-    fetchUsers();
-  };
+  const { users, totalPages, loading, refetch } = useUsers(page, 10, roleFilter);
 
   const isSuperAdmin = currentUser?.role === 'super-admin';
   const isAdmin = currentUser?.role === 'admin';
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete user?')) return;
+    await userService.delete(id);
+    refetch();
+  };
+
+  const handleToggleStatus = async (id: string) => {
+    await userService.toggleStatus(id);
+    refetch();
+  };
 
   if (!isSuperAdmin && !isAdmin) {
     return <div className={styles.accessDenied}>Access denied. Only admins can view users.</div>;
@@ -86,6 +42,7 @@ export default function UsersList() {
           <Button onClick={() => { setEditingUser(null); setShowForm(true); }}>Create User</Button>
         )}
       </div>
+
       <div className={styles.filters}>
         <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
           <option value="">All Roles</option>
@@ -94,7 +51,9 @@ export default function UsersList() {
           <option value="user">User</option>
         </select>
       </div>
+
       {loading && <div>Loading...</div>}
+
       <table className={styles.table}>
         <thead>
           <tr>
@@ -121,24 +80,36 @@ export default function UsersList() {
                 </Badge>
               </td>
               <td>
-                {(isSuperAdmin || isAdmin) && <Button variant="secondary" onClick={() => { setEditingUser(u); setShowForm(true); }}>Edit</Button>}
                 {(isSuperAdmin || isAdmin) && (
-                  <Button variant="secondary" onClick={() => handleToggleStatus(u.id)}>
-                    Toggle Status
-                  </Button>
+                  <Button variant="secondary" onClick={() => { setEditingUser(u); setShowForm(true); }}>Edit</Button>
                 )}
-                {isSuperAdmin && <Button variant="danger" onClick={() => handleDelete(u.id)}>Delete</Button>}
+                {(isSuperAdmin || isAdmin) && (
+                  <Button variant="secondary" onClick={() => handleToggleStatus(u.id)}>Toggle Status</Button>
+                )}
+                {isSuperAdmin && (
+                  <Button variant="danger" onClick={() => handleDelete(u.id)}>Delete</Button>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
       <div className={styles.pagination}>
-        <button disabled={page === 1} onClick={() => setPage(p => p-1)}>Prev</button>
+        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
         <span>Page {page} of {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage(p => p+1)}>Next</button>
+        <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
       </div>
-      {showForm && <UserForm user={editingUser} onClose={() => { setShowForm(false); fetchUsers(); }} />}
+
+      {showForm && (
+        <UserForm
+          user={editingUser}
+          onClose={() => {
+            setShowForm(false);
+            refetch();
+          }}
+        />
+      )}
     </div>
   );
 }
