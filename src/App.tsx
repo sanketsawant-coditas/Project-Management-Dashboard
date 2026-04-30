@@ -10,6 +10,7 @@ import ProjectsList from './pages/projects/ProjectsList';
 import ProjectDetails from './pages/projects/ProjectDetails';
 
 import { Outlet } from 'react-router-dom';
+import NotFound from './pages/NotFound/NotFound';
 
 function Layout() {
   return (
@@ -28,7 +29,8 @@ function App() {
       <Routes>
         {/* Public route */}
         <Route path="/login" element={<Login />} />
-
+`       {/* Catch-all for 404 */}
+        <Route path="*" element={<NotFound />} />
         {/* Protected routes group */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>

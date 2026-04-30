@@ -6,6 +6,7 @@ import { Button } from '@/components/Button/Button';
 import styles from './ProjectForm.module.scss';
 import { projectSchema, type FormData } from '@/schemas/project.schema';
 import type { ProjectFormProps } from './props.types';
+import { toast } from 'react-hot-toast/headless';
 
 export default function ProjectForm({ project, onClose, onSuccess }: ProjectFormProps) {
   const {
@@ -57,9 +58,11 @@ export default function ProjectForm({ project, onClose, onSuccess }: ProjectForm
         response = await api.post('/projects', payload);
       }
       if (onSuccess && !project) onSuccess(response.data);
+      toast.success(project ? 'Project updated successfully' : 'Project created successfully');
       onClose();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to save project');
+      toast.error(err.response?.data?.message || 'Failed to save project');
     }
   };
 

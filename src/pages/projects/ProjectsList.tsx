@@ -9,6 +9,7 @@ import { formatStatus, formatPriority, statusColor, priorityColor } from '@/util
 import { projectService } from '@/services/projectService';
 import styles from './ProjectsList.module.scss';
 import type { Project } from '@/types';
+import { toast } from 'react-hot-toast/headless';
 
 export default function ProjectsList() {
   const { user } = useAuth();
@@ -24,11 +25,16 @@ const { projects, totalPages, loading, refetch } = useProjects(page, 10, statusF
   const canEdit = user?.role === 'admin' || user?.role === 'super-admin';
   const canDelete = user?.role === 'super-admin';
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this project?')) return;
+const handleDelete = async (id: string) => {
+  if (!confirm('Delete this project?')) return;
+  try {
     await projectService.delete(id);
+    toast.success('Project deleted successfully');
     refetch();
-  };
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || 'Delete failed');
+  }
+};
 
   return (
     <div className={styles.container}>

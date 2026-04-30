@@ -1,0 +1,50 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.container {
+  min-height: 70vh;
+  @include flex-center;
+  flex-direction: column;
+  text-align: center;
+  padding: $spacing-8 $spacing-4;
+
+  h1 {
+    font-size: 6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: $spacing-2;
+    letter-spacing: -2px;
+  }
+
+  p {
+    font-size: $text-xl;
+    color: $gray-600;
+    margin-bottom: $spacing-8;
+  }
+
+  a {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: $spacing-2 $spacing-6;
+    border-radius: $radius-xl;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    h1 { font-size: 4rem; }
+    p { font-size: $text-base; }
+  }
+}

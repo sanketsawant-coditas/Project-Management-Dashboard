@@ -4,33 +4,57 @@
 .container {
   min-height: 100vh;
   @include flex-center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: $spacing-4;
 }
+
 .card {
-  @include card;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: $radius-xl;
+  padding: $spacing-8;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 55px rgba(0, 0, 0, 0.25);
+  }
 }
+
 .title {
   font-size: $text-2xl;
+  font-weight: 700;
   text-align: center;
   margin-bottom: $spacing-6;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  letter-spacing: -0.3px;
 }
 .error {
-  color: $danger;
+  background: rgba($danger, 0.1);
+  border-left: 4px solid $danger;
+  color: darken($danger, 10%);
+  padding: $spacing-2 $spacing-3;
+  border-radius: $radius-md;
   font-size: $text-sm;
-  text-align: center;
   margin-bottom: $spacing-4;
 }
+
 .testCreds {
   margin-top: $spacing-6;
   font-size: $text-sm;
   text-align: center;
-  color: $gray-500;
-}
-
-.hint {
-  margin-top: $spacing-2;
-  font-size: $text-xs;
-  color: $gray-500;
-  text-align: center;
+  color: $gray-600;
+  background: $gray-100;
+  padding: $spacing-2;
+  border-radius: $radius-md;
+  transition: background 0.2s;
+  
+  &:hover {
+    background: $gray-200;
+  }
 }

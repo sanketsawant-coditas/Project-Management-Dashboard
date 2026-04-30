@@ -1,14 +1,42 @@
 @use '../../styles/variables' as *;
 
-.wrapper { margin-bottom: $spacing-4; }
-.label { display: block; font-size: $text-sm; margin-bottom: $spacing-1; color: $gray-700; }
+.wrapper {
+  margin-bottom: $spacing-4;
+}
+
+.label {
+  display: block;
+  font-size: $text-sm;
+  font-weight: 500;
+  margin-bottom: $spacing-1;
+  color: $gray-700;
+}
+
 .input {
   width: 100%;
-  padding: $spacing-2 $spacing-3;
+  padding: $spacing-3 $spacing-4;
   border: 1px solid $gray-300;
-  border-radius: $radius-md;
-  font-size: $text-sm;
-  &:focus { outline: none; border-color: $primary; }
-  &.error { border-color: $danger; }
+  border-radius: $radius-xl;     
+  font-size: $text-base;
+  transition: all 0.2s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+  
+  &.error {
+    border-color: $danger;
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($danger, 0.2);
+    }
+  }
 }
-.errorMsg { color: $danger; font-size: $text-xs; margin-top: $spacing-1; display: block; }
+
+.errorMsg {
+  color: $danger;
+  font-size: $text-xs;
+  margin-top: $spacing-1;
+  display: block;
+}

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -14,10 +15,21 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
-      if (localStorage.getItem('token')) {
-        localStorage.removeItem('token');
+    const status = err.response?.status;
+    const message = err.response?.data?.message || 'Something went wrong';
+
+    if (status === 401) {
+      localStorage.removeItem('token');
+      if (window.location.pathname !== '/login') {
+        toast.error('Session expired. Please login again.');
+        window.location.href = '/login';
       }
+    } else if (status === 403) {
+      toast.error('You do not have permission to perform this action.');
+    } else if (status === 404) {
+      toast.error('Resource not found.');
+    } else {
+      toast.error(message);
     }
     return Promise.reject(err);
   }

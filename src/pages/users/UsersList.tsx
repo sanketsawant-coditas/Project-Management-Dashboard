@@ -6,6 +6,7 @@ import UserForm from './UserForm';
 import { useUsers } from '@/hooks/useUsers';
 import { userService } from '@/services/userService';
 import styles from './UsersList.module.scss';
+import { toast } from 'react-hot-toast/headless';
 
 export default function UsersList() {
   const { user: currentUser } = useAuth();
@@ -19,16 +20,26 @@ export default function UsersList() {
   const isSuperAdmin = currentUser?.role === 'super-admin';
   const isAdmin = currentUser?.role === 'admin';
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete user?')) return;
+const handleDelete = async (id: string) => {
+  if (!confirm('Delete user?')) return;
+  try {
     await userService.delete(id);
+    toast.success('User deleted successfully');
     refetch();
-  };
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || 'Delete failed');
+  }
+};
 
-  const handleToggleStatus = async (id: string) => {
+const handleToggleStatus = async (id: string) => {
+  try {
     await userService.toggleStatus(id);
+    toast.success('Status toggled successfully');
     refetch();
-  };
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || 'Toggle failed');
+  }
+};
 
   if (!isSuperAdmin && !isAdmin) {
     return <div className={styles.accessDenied}>Access denied. Only admins can view users.</div>;

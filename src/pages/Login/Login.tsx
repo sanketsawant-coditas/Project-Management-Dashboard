@@ -8,6 +8,7 @@ import { Button } from '@/components/Button/Button';
 import styles from './Login.module.scss';
 import { authService } from '@/services/authService';
 import { loginSchema, type LoginFormData } from '@/schemas/auth.schema';
+import { toast } from 'react-hot-toast/headless';
 
 
 export default function Login() {
@@ -50,7 +51,7 @@ export default function Login() {
       navigate('/dashboard');
     } catch (err: any) {
       setLastAttemptCredentials(data);
-      setServerError(err.response?.data?.message || 'Login failed. Please try again.');
+      toast.error(err.response?.data?.message || 'Login failed');
     }
   };
 
