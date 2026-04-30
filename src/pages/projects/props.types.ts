@@ -9,6 +9,8 @@ export interface ProjectFormProps {
 export interface ProjectModalProps {
   project: Project;
   onClose: () => void;
+  onSuccess?: (newProject: Project) => void;
   onEdit: () => void;
   canEdit: boolean;
+  onUpdate?: (updatedProject: Project) => void;
 }

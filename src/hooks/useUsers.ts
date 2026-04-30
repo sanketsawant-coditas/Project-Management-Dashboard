@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { userService } from '@/services/userService';
-import type User from '@/types/user.types';
+import type User  from '@/types/user.types';
 
 export const useUsers = (page: number, limit: number, roleFilter: string) => {
   const [users, setUsers] = useState<User[]>([]);
@@ -16,8 +16,21 @@ export const useUsers = (page: number, limit: number, roleFilter: string) => {
       } else {
         res = await userService.getAll(page, limit);
       }
-      setUsers(res.data.data || []);
-      setTotalPages(res.data.totalPages || 1);
+      let usersArray: User[] = [];
+      let totalPagesFromApi = 1;
+
+      if (Array.isArray(res.data)) {
+        usersArray = res.data;
+        totalPagesFromApi = 1; 
+      } else if (res.data.data && Array.isArray(res.data.data)) {
+        usersArray = res.data.data;
+        totalPagesFromApi = res.data.totalPages || 1;
+      } else {
+        usersArray = [];
+      }
+
+      setUsers(usersArray);
+      setTotalPages(totalPagesFromApi);
     } catch (err) {
       console.error(err);
       setUsers([]);

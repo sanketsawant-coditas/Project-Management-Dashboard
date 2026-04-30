@@ -10,7 +10,7 @@ export const projectSchema = z.object({
   startDate: z.string().min(1, 'Start date is required'),
   endDate: z.string().optional(),
   budget: z.number().optional(),
-  technologies: z.string().optional(), // will be split into array
+  technologies: z.string().optional(), 
 });
 
 export type FormData = z.infer<typeof projectSchema>;

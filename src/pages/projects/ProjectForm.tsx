@@ -119,7 +119,7 @@ export default function ProjectForm({ project, onClose, onSuccess }: ProjectForm
             <Button type="submit" loading={isSubmitting}>
               {project ? 'Update' : 'Create'}
             </Button>
-            <Button variant="secondary" type="button" onClick={onClose}>
+            <Button variant="secondary" type="button" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
           </div>

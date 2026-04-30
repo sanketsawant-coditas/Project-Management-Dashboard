@@ -1,6 +1,8 @@
+// src/hooks/useProjects.ts
 import { useState, useEffect, useCallback } from 'react';
 import { projectService } from '@/services/projectService';
 import type { Project } from '@/types';
+
 
 export const useProjects = (page: number, limit: number, statusFilter: string, priorityFilter: string) => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -24,5 +26,14 @@ export const useProjects = (page: number, limit: number, statusFilter: string, p
     fetchProjects();
   }, [fetchProjects]);
 
-  return { projects, totalPages, loading, refetch: fetchProjects };
+  const updateProject = (updatedProject: Project) => {
+    setProjects(prev =>
+      prev.map(p => (p.id === updatedProject.id ? updatedProject : p))
+    );
+  };
+    const addProject = (newProject: Project) => {
+      setProjects(prev => [...prev, newProject]);  
+    };
+
+  return { projects, totalPages, loading, refetch: fetchProjects, updateProject, addProject  };
 };

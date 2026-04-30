@@ -20,7 +20,7 @@ export default function ProjectsList() {
 const [editingProject, setEditingProject] = useState<Project | null>(null);
 const [modalProject, setModalProject] = useState<Project | null>(null);
 
-const { projects, totalPages, loading, refetch } = useProjects(page, 10, statusFilter, priorityFilter);
+const { projects, totalPages, loading, refetch, updateProject, addProject } = useProjects(page, 10, statusFilter, priorityFilter);
 
   const canEdit = user?.role === 'admin' || user?.role === 'super-admin';
   const canDelete = user?.role === 'super-admin';
@@ -88,6 +88,7 @@ const handleDelete = async (id: string) => {
               <div>Owner: {p.ownerName}</div>
               <div>Team: {p.members?.length || 0} members</div>
               <div>Start: {new Date(p.startDate).toLocaleDateString()}</div>
+              {p.endDate && <div>End: {new Date(p.endDate).toLocaleDateString()}</div>}
             </div>
             <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
               {canEdit && (
@@ -118,17 +119,18 @@ const handleDelete = async (id: string) => {
         <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
       </div>
 
-      {showForm && (
+     {showForm && (
         <ProjectForm
           project={editingProject}
-          onClose={() => {
+          onClose={() => setShowForm(false)}   
+          onSuccess={(newProject) => {
             setShowForm(false);
-            // You can add a refetch trigger here; for simplicity, reload
-            window.location.reload();
+            addProject(newProject);           
           }}
         />
       )}
 
+      {/* Project Modal for viewing details */}
       {modalProject && (
         <ProjectModal
           project={modalProject}
@@ -139,8 +141,9 @@ const handleDelete = async (id: string) => {
             setShowForm(true);
           }}
           canEdit={canEdit}
+          onUpdate={(updated) => updateProject(updated)}   
         />
       )}
-    </div>
-  );
+          </div>
+        );
 }

@@ -1,5 +1,6 @@
 @use '../../styles/variables' as *;
 @use '../../styles/mixins' as *;
+@use 'sass:color';
 
 .container {
   min-height: 100vh;
@@ -34,10 +35,11 @@
   color: transparent;
   letter-spacing: -0.3px;
 }
+
 .error {
   background: rgba($danger, 0.1);
   border-left: 4px solid $danger;
-  color: darken($danger, 10%);
+  color: color.adjust($danger, $lightness: -10%);
   padding: $spacing-2 $spacing-3;
   border-radius: $radius-md;
   font-size: $text-sm;

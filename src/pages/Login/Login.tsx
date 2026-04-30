@@ -8,8 +8,7 @@ import { Button } from '@/components/Button/Button';
 import styles from './Login.module.scss';
 import { authService } from '@/services/authService';
 import { loginSchema, type LoginFormData } from '@/schemas/auth.schema';
-import { toast } from 'react-hot-toast/headless';
-
+import toast from 'react-hot-toast'; // corrected import (remove /headless)
 
 export default function Login() {
   const { login } = useAuth();
@@ -37,10 +36,13 @@ export default function Login() {
         watchedEmail !== lastAttemptCredentials.email ||
         watchedPassword !== lastAttemptCredentials.password;
       setFieldsChanged(changed);
+      if (changed && serverError) {
+        setServerError(null);
+      }
     } else {
       setFieldsChanged(false);
     }
-  }, [watchedEmail, watchedPassword, lastAttemptCredentials]);
+  }, [watchedEmail, watchedPassword, lastAttemptCredentials, serverError]);
 
   const onSubmit = async (data: LoginFormData) => {
     setServerError(null);
@@ -50,8 +52,10 @@ export default function Login() {
       login(access_token, user);
       navigate('/dashboard');
     } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Invalid email or password';
       setLastAttemptCredentials(data);
-      toast.error(err.response?.data?.message || 'Login failed');
+      setServerError(errorMsg);   
+      toast.error(errorMsg);
     }
   };
 

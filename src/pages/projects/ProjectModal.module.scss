@@ -158,4 +158,42 @@
     align-items: flex-start;
     gap: $spacing-1;
   }
+  .teamHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-2;
+}
+
+.addMember {
+  display: flex;
+  gap: $spacing-2;
+  margin: $spacing-2 0;
+  
+  select {
+    flex: 1;
+    padding: $spacing-2;
+    border: 1px solid $gray-300;
+    border-radius: $radius-md;
+  }
+}
+
+.memberList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-2 0;
+  border-bottom: 1px solid $gray-200;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: $danger;
+  cursor: pointer;
+  font-size: $text-sm;
+  &:hover {
+    text-decoration: underline;
+  }
+}
 }
