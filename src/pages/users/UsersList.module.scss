@@ -28,3 +28,14 @@
 .modalContent { background: white; padding: $spacing-6; border-radius: $radius-lg; width: 400px;
   form { display: flex; flex-direction: column; gap: $spacing-4; }
 }
+.searchInput {
+  padding: $spacing-2 $spacing-3;
+  border: 1px solid $gray-300;
+  border-radius: $radius-md;
+  font-size: $text-sm;
+  width: 250px;
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}

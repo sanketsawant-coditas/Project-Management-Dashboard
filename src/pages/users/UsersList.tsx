@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast/headless';
 
 export default function UsersList() {
   const { user: currentUser } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -19,6 +20,16 @@ export default function UsersList() {
 
   const isSuperAdmin = currentUser?.role === 'super-admin';
   const isAdmin = currentUser?.role === 'admin';
+
+   const filteredUsers = useMemo(() => {
+    if (!searchTerm.trim()) return users;
+    const lowerSearch = searchTerm.toLowerCase();
+    return users.filter(
+      (u) =>
+        u.name.toLowerCase().includes(lowerSearch) ||
+        u.email.toLowerCase().includes(lowerSearch)
+    );
+  }, [users, searchTerm]);
 
 const handleDelete = async (id: string) => {
   if (!confirm('Delete user?')) return;
@@ -53,8 +64,14 @@ const handleToggleStatus = async (id: string) => {
           <Button onClick={() => { setEditingUser(null); setShowForm(true); }}>Create User</Button>
         )}
       </div>
-
       <div className={styles.filters}>
+        <input
+          type="text"
+          placeholder="Search by name or email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className={styles.searchInput}
+        />
         <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
           <option value="">All Roles</option>
           <option value="super-admin">Super Admin</option>
@@ -76,7 +93,7 @@ const handleToggleStatus = async (id: string) => {
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
+          {filteredUsers.map((u) => (
             <tr key={u.id}>
               <td>{u.name}</td>
               <td>{u.email}</td>
