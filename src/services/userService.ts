@@ -1,6 +1,6 @@
-import api from '@/api/axios';
-import type User from '@/types/user.types';
-import type { PaginatedResponse } from '../types/api.types';
+import api from "@/api/axios";
+import type User from "@/types/user.types";
+import type { PaginatedResponse } from "../types/api.types";
 
 // Assuming PaginatedResponse is in types/api.types.ts
 
@@ -9,18 +9,18 @@ export const userService = {
     api.get<PaginatedResponse<User>>(`/users?page=${page}&limit=${limit}`),
 
   getByRole: (role: string, page: number, limit: number) =>
-    api.get<PaginatedResponse<User>>(`/users/role/${role}?page=${page}&limit=${limit}`),
+    api.get<PaginatedResponse<User>>(
+      `/users/role/${role}?page=${page}&limit=${limit}`,
+    ),
 
   getById: (id: string) => api.get<User>(`/users/${id}`),
 
   create: (data: Partial<User> & { password: string }) =>
-    api.post<User>('/users', data),
+    api.post<User>("/users", data),
 
-  update: (id: string, data: Partial<User>) =>
-    api.patch(`/users/${id}`, data),
+  update: (id: string, data: Partial<User>) => api.patch(`/users/${id}`, data),
 
   delete: (id: string) => api.delete(`/users/${id}`),
 
-  toggleStatus: (id: string) =>
-    api.patch(`/users/${id}/toggle-status`),
+  toggleStatus: (id: string) => api.patch(`/users/${id}/toggle-status`),
 };

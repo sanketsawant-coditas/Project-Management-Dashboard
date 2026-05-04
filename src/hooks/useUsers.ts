@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { userService } from '@/services/userService';
-import type User  from '@/types/user.types';
+import { useState, useEffect, useCallback } from "react";
+import { userService } from "@/services/userService";
+import type User from "@/types/user.types";
 
 export const useUsers = (page: number, limit: number, roleFilter: string) => {
   const [users, setUsers] = useState<User[]>([]);
@@ -21,7 +21,7 @@ export const useUsers = (page: number, limit: number, roleFilter: string) => {
 
       if (Array.isArray(res.data)) {
         usersArray = res.data;
-        totalPagesFromApi = 1; 
+        totalPagesFromApi = 1;
       } else if (res.data.data && Array.isArray(res.data.data)) {
         usersArray = res.data.data;
         totalPagesFromApi = res.data.totalPages || 1;

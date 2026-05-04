@@ -1,5 +1,5 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixins' as *;
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
 
 .modal {
   position: fixed;
@@ -14,13 +14,13 @@
 .modalContent {
   background: white;
   border-radius: $radius-xl;
-  max-width: 700px;          /* slightly wider for two columns */
+  max-width: 700px; /* slightly wider for two columns */
   width: 90%;
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  
+
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -31,7 +31,9 @@
   &::-webkit-scrollbar-thumb {
     background: $gray-400;
     border-radius: 4px;
-    &:hover { background: $gray-500; }
+    &:hover {
+      background: $gray-500;
+    }
   }
 }
 
@@ -67,29 +69,31 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
-  
+
   label {
     font-weight: 600;
     font-size: $text-sm;
     color: $gray-700;
     margin-bottom: $spacing-1;
   }
-  
-  input, select, textarea {
+
+  input,
+  select,
+  textarea {
     padding: $spacing-2 $spacing-3;
     border: 1px solid $gray-300;
     border-radius: $radius-md;
     font-size: $text-sm;
     transition: 0.2s;
     background: white;
-    
+
     &:focus {
       outline: none;
       border-color: $primary;
       box-shadow: 0 0 0 2px rgba($primary, 0.2);
     }
   }
-  
+
   textarea {
     resize: vertical;
     min-height: 80px;
@@ -126,8 +130,12 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes slideUp {
   from {

@@ -1,5 +1,5 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixins' as *;
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
 
 .navbar {
   @include flex-between;
@@ -12,7 +12,6 @@
   margin-bottom: $spacing-6;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-
 }
 
 .logo {
@@ -23,7 +22,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  
+
   a {
     text-decoration: none;
     color: inherit;
@@ -34,17 +33,19 @@
   display: flex;
   gap: $spacing-6;
   align-items: center;
-  
+
   a {
     text-decoration: none;
     font-weight: 500;
     color: $gray-700;
     font-size: $text-sm;
-    transition: color 0.2s, transform 0.2s;
+    transition:
+      color 0.2s,
+      transform 0.2s;
     position: relative;
-    
+
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       bottom: -4px;
       left: 0;
@@ -53,10 +54,10 @@
       background: linear-gradient(90deg, #667eea, #764ba2);
       transition: width 0.2s ease;
     }
-    
+
     &:hover {
       color: $primary;
-      
+
       &::after {
         width: 100%;
       }
@@ -68,7 +69,7 @@
   display: flex;
   align-items: center;
   gap: $spacing-3;
-  
+
   .role {
     background: rgba(102, 126, 234, 0.1);
     padding: $spacing-1 $spacing-2;
@@ -79,7 +80,7 @@
     letter-spacing: 0.5px;
     color: $primary;
   }
-  
+
   .logoutBtn {
     background: linear-gradient(135deg, #667eea, #764ba2);
     border: none;
@@ -90,13 +91,13 @@
     color: white;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
     &:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
-    
+
     &:active {
       transform: translateY(0);
     }
@@ -127,14 +128,14 @@
     gap: $spacing-3;
     padding: $spacing-2 $spacing-4;
   }
-  
+
   .links {
     order: 3;
     width: 100%;
     justify-content: center;
     gap: $spacing-4;
   }
-  
+
   .userInfo {
     margin-left: auto;
   }

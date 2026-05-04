@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type User from '@/types/user.types';
-import { authService } from '@/services/authService';
-
+import React, { createContext, useContext, useState, useEffect } from "react";
+import type User from "@/types/user.types";
+import { authService } from "@/services/authService";
 
 interface AuthContextType {
   user: User | null;
@@ -13,9 +12,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token"),
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const res = await authService.getCurrentUser();
           setUser(res.data);
         } catch {
-          localStorage.removeItem('token');
+          localStorage.removeItem("token");
           setToken(null);
         }
       }
@@ -35,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [token, user]);
 
   const login = (newToken: string, userData: User) => {
-    localStorage.setItem('token', newToken);
+    localStorage.setItem("token", newToken);
     setToken(newToken);
     setUser(userData);
   };
@@ -44,9 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await authService.logout();
     } catch (error) {
-      console.error('Logout API error:', error);
+      console.error("Logout API error:", error);
     } finally {
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
       setToken(null);
       setUser(null);
     }
@@ -62,7 +65,6 @@ export { AuthContext };
 
 export const useAuth = (): AuthContextType => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
-

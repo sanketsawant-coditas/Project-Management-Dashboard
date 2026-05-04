@@ -1,6 +1,6 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixins' as *;
-@use 'sass:color';
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+@use "sass:color";
 
 .container {
   min-height: 100vh;
@@ -16,8 +16,10 @@
   width: 100%;
   max-width: 420px;
   box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 30px 55px rgba(0, 0, 0, 0.25);
@@ -55,7 +57,7 @@
   padding: $spacing-2;
   border-radius: $radius-md;
   transition: background 0.2s;
-  
+
   &:hover {
     background: $gray-200;
   }

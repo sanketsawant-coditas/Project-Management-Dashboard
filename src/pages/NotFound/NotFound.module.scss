@@ -1,5 +1,5 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixins' as *;
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
 
 .container {
   min-height: 70vh;
@@ -33,8 +33,10 @@
     color: white;
     text-decoration: none;
     font-weight: 600;
-    transition: transform 0.2s, box-shadow 0.2s;
-    
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
@@ -44,7 +46,11 @@
 
 @media (max-width: 768px) {
   .container {
-    h1 { font-size: 4rem; }
-    p { font-size: $text-base; }
+    h1 {
+      font-size: 4rem;
+    }
+    p {
+      font-size: $text-base;
+    }
   }
 }

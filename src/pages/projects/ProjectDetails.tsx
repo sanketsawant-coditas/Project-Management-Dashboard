@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import api from '@/api/axios';
-import { Button } from '@/components/Button/Button';
-import { Badge } from '@/components/Badge/Badge';
-import ProjectForm from './ProjectForm';
-import styles from './ProjectDetails.module.scss';
-import type User from '@/types/user.types';
-import type { Project } from '@/types/project.types';
-import { formatPriority, formatStatus, priorityColor, statusColor } from '@/utils/formatters';
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import api from "@/api/axios";
+import { Button } from "@/components/Button/Button";
+import { Badge } from "@/components/Badge/Badge";
+import ProjectForm from "./ProjectForm";
+import styles from "./ProjectDetails.module.scss";
+import type User from "@/types/user.types";
+import type { Project } from "@/types/project.types";
+import {
+  formatPriority,
+  formatStatus,
+  priorityColor,
+  statusColor,
+} from "@/utils/formatters";
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
@@ -18,18 +23,18 @@ export default function ProjectDetails() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [addingMember, setAddingMember] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const canEdit = user?.role === 'admin' || user?.role === 'super-admin';
-  const canDelete = user?.role === 'super-admin';
+  const canEdit = user?.role === "admin" || user?.role === "super-admin";
+  const canDelete = user?.role === "super-admin";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [projectRes, usersRes] = await Promise.all([
           api.get(`/projects/${id}`),
-          api.get('/users?limit=100'),
+          api.get("/users?limit=100"),
         ]);
         setProject(projectRes.data);
         setAllUsers(usersRes.data.users || usersRes.data || []);
@@ -48,7 +53,7 @@ export default function ProjectDetails() {
       await api.post(`/projects/${id}/members/${selectedUserId}`);
       const res = await api.get(`/projects/${id}`);
       setProject(res.data);
-      setSelectedUserId('');
+      setSelectedUserId("");
       setAddingMember(false);
     } catch (err) {
       console.error(err);
@@ -56,7 +61,7 @@ export default function ProjectDetails() {
   };
 
   const handleRemoveMember = async (userId: string) => {
-    if (!confirm('Remove this member from project?')) return;
+    if (!confirm("Remove this member from project?")) return;
     try {
       await api.delete(`/projects/${id}/members/${userId}`);
       const res = await api.get(`/projects/${id}`);
@@ -67,9 +72,9 @@ export default function ProjectDetails() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Delete this project permanently?')) return;
+    if (!confirm("Delete this project permanently?")) return;
     await api.delete(`/projects/${id}`);
-    navigate('/projects');
+    navigate("/projects");
   };
 
   const refreshProject = async () => {
@@ -87,16 +92,26 @@ export default function ProjectDetails() {
           ← Back to Projects
         </Link>
         <div className={styles.actions}>
-          {canEdit && <Button onClick={() => setShowEditModal(true)}>Edit Project</Button>}
-          {canDelete && <Button variant="danger" onClick={handleDelete}>Delete Project</Button>}
+          {canEdit && (
+            <Button onClick={() => setShowEditModal(true)}>Edit Project</Button>
+          )}
+          {canDelete && (
+            <Button variant="danger" onClick={handleDelete}>
+              Delete Project
+            </Button>
+          )}
         </div>
       </div>
 
       <div className={styles.card}>
         <h1>{project.name}</h1>
         <div className={styles.badges}>
-          <Badge variant={statusColor[project.status]}>{formatStatus(project.status)}</Badge>
-          <Badge variant={priorityColor[project.priority]}>{formatPriority(project.priority)}</Badge>
+          <Badge variant={statusColor[project.status]}>
+            {formatStatus(project.status)}
+          </Badge>
+          <Badge variant={priorityColor[project.priority]}>
+            {formatPriority(project.priority)}
+          </Badge>
         </div>
         <div className={styles.progressSection}>
           <div className={styles.progressBar}>
@@ -106,12 +121,28 @@ export default function ProjectDetails() {
         </div>
         <p className={styles.description}>{project.description}</p>
         <div className={styles.details}>
-          <div><strong>Owner:</strong> {project.ownerName}</div>
-          <div><strong>Start Date:</strong> {new Date(project.startDate).toLocaleDateString()}</div>
-          {project.endDate && <div><strong>End Date:</strong> {new Date(project.endDate).toLocaleDateString()}</div>}
-          {project.budget && <div><strong>Budget:</strong> ${project.budget.toLocaleString()}</div>}
+          <div>
+            <strong>Owner:</strong> {project.ownerName}
+          </div>
+          <div>
+            <strong>Start Date:</strong>{" "}
+            {new Date(project.startDate).toLocaleDateString()}
+          </div>
+          {project.endDate && (
+            <div>
+              <strong>End Date:</strong>{" "}
+              {new Date(project.endDate).toLocaleDateString()}
+            </div>
+          )}
+          {project.budget && (
+            <div>
+              <strong>Budget:</strong> ${project.budget.toLocaleString()}
+            </div>
+          )}
           {project.technologies && project.technologies.length > 0 && (
-            <div><strong>Technologies:</strong> {project.technologies.join(', ')}</div>
+            <div>
+              <strong>Technologies:</strong> {project.technologies.join(", ")}
+            </div>
           )}
         </div>
       </div>
@@ -120,14 +151,20 @@ export default function ProjectDetails() {
         <div className={styles.teamHeader}>
           <h2>Team Members ({project.members.length})</h2>
           {canEdit && (
-            <Button variant="secondary" onClick={() => setAddingMember(!addingMember)}>
-              {addingMember ? 'Cancel' : 'Add Member'}
+            <Button
+              variant="secondary"
+              onClick={() => setAddingMember(!addingMember)}
+            >
+              {addingMember ? "Cancel" : "Add Member"}
             </Button>
           )}
         </div>
         {addingMember && canEdit && (
           <div className={styles.addMember}>
-            <select value={selectedUserId} onChange={(e) => setSelectedUserId(e.target.value)}>
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+            >
               <option value="">Select user...</option>
               {allUsers
                 .filter((u) => !project.members.some((m) => m.userId === u.id))
@@ -137,7 +174,9 @@ export default function ProjectDetails() {
                   </option>
                 ))}
             </select>
-            <Button onClick={handleAddMember} disabled={!selectedUserId}>Add</Button>
+            <Button onClick={handleAddMember} disabled={!selectedUserId}>
+              Add
+            </Button>
           </div>
         )}
         {project.members.length === 0 ? (
@@ -148,10 +187,15 @@ export default function ProjectDetails() {
               <li key={member.userId} className={styles.memberItem}>
                 <div>
                   <strong>{member.userName}</strong>
-                  {member.projectRole && <span className={styles.role}> • {member.projectRole}</span>}
+                  {member.projectRole && (
+                    <span className={styles.role}> • {member.projectRole}</span>
+                  )}
                 </div>
                 {canEdit && (
-                  <Button variant="danger" onClick={() => handleRemoveMember(member.userId)}>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleRemoveMember(member.userId)}
+                  >
                     Remove
                   </Button>
                 )}

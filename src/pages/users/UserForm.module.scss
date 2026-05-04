@@ -1,5 +1,5 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixins' as *;
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
 
 .modal {
   position: fixed;
@@ -47,9 +47,9 @@
   }
 
   .error {
-  color: $danger;
-  font-size: $text-xs;
-  margin-top: $spacing-1;
-  display: block;
-}
+    color: $danger;
+    font-size: $text-xs;
+    margin-top: $spacing-1;
+    display: block;
+  }
 }

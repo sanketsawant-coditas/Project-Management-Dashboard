@@ -1,22 +1,31 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { Badge } from './Badge';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Badge } from "./Badge";
 
 const meta: Meta<typeof Badge> = {
-  title: 'Components/Badge',
+  title: "Components/Badge",
   component: Badge,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['default', 'success', 'warning', 'danger', 'info', 'primary', 'secondary'], // add any variants defined in your SCSS
-      description: 'Badge style variant (falls back to "default" if class not found)',
+      control: "select",
+      options: [
+        "default",
+        "success",
+        "warning",
+        "danger",
+        "info",
+        "primary",
+        "secondary",
+      ], // add any variants defined in your SCSS
+      description:
+        'Badge style variant (falls back to "default" if class not found)',
     },
     children: {
-      control: 'text',
-      description: 'Badge content',
+      control: "text",
+      description: "Badge content",
     },
   },
 };
@@ -27,63 +36,63 @@ type Story = StoryObj<typeof Badge>;
 // Default badge
 export const Default: Story = {
   args: {
-    children: 'Default',
-    variant: 'default',
+    children: "Default",
+    variant: "default",
   },
 };
 
 // Success badge
 export const Success: Story = {
   args: {
-    children: 'Success',
-    variant: 'success',
+    children: "Success",
+    variant: "success",
   },
 };
 
 // Warning badge
 export const Warning: Story = {
   args: {
-    children: 'Warning',
-    variant: 'warning',
+    children: "Warning",
+    variant: "warning",
   },
 };
 
 // Danger badge
 export const Danger: Story = {
   args: {
-    children: 'Danger',
-    variant: 'danger',
+    children: "Danger",
+    variant: "danger",
   },
 };
 
 // Info badge (if you have that style)
 export const Info: Story = {
   args: {
-    children: 'Info',
-    variant: 'info',
+    children: "Info",
+    variant: "info",
   },
 };
 
 // Primary badge (example)
 export const Primary: Story = {
   args: {
-    children: 'Primary',
-    variant: 'primary',
+    children: "Primary",
+    variant: "primary",
   },
 };
 
 // Secondary badge
 export const Secondary: Story = {
   args: {
-    children: 'Secondary',
-    variant: 'secondary',
+    children: "Secondary",
+    variant: "secondary",
   },
 };
 
 // All variants showcase (non‑interactive)
 export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
       <Badge variant="default">Default</Badge>
       <Badge variant="success">Success</Badge>
       <Badge variant="warning">Warning</Badge>
@@ -97,7 +106,8 @@ export const AllVariants: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Shows all available variant styles. The last badge uses an undefined variant and falls back to "default".',
+        story:
+          'Shows all available variant styles. The last badge uses an undefined variant and falls back to "default".',
       },
     },
   },

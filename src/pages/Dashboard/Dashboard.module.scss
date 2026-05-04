@@ -1,5 +1,5 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixins' as *;
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
 
 .container {
   padding: $spacing-6;
@@ -14,7 +14,7 @@
 
 .card {
   @include card;
-  
+
   h3 {
     font-size: $text-base;
     font-weight: 600;
@@ -39,17 +39,17 @@
   align-items: center;
   padding: $spacing-2 0;
   border-bottom: 1px solid $gray-100;
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   .statLabel {
     font-weight: 500;
     color: $gray-700;
     text-transform: capitalize;
   }
-  
+
   .statCount {
     font-weight: 600;
     color: $primary;
@@ -64,25 +64,25 @@
 
 .deadlines {
   margin-top: $spacing-8;
-  
+
   h2 {
     font-size: $text-xl;
     font-weight: 600;
     margin-bottom: $spacing-4;
     color: $gray-800;
   }
-  
+
   ul {
     list-style: none;
     padding: 0;
-    
+
     li {
       padding: $spacing-2 $spacing-3;
       border-bottom: 1px solid $gray-200;
       background: $gray-50;
       border-radius: $radius-md;
       margin-bottom: $spacing-2;
-      
+
       &:hover {
         background: $gray-100;
       }

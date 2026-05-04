@@ -1,6 +1,6 @@
-import { useAuth } from '@/context/AuthContext';
-import { Badge } from '@/components/Badge/Badge';
-import styles from './Profile.module.scss';
+import { useAuth } from "@/context/AuthContext";
+import { Badge } from "@/components/Badge/Badge";
+import styles from "./Profile.module.scss";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -17,27 +17,31 @@ export default function Profile() {
           <h1>{user.name}</h1>
           <Badge
             variant={
-              user.role === 'super-admin'
-                ? 'warning'
-                : user.role === 'admin'
-                ? 'success'
-                : 'default'
+              user.role === "super-admin"
+                ? "warning"
+                : user.role === "admin"
+                  ? "success"
+                  : "default"
             }
           >
             {user.role}
           </Badge>
         </div>
         <div className={styles.info}>
-          <p><strong>Email:</strong> {user.email}</p>
           <p>
-            <strong>Status:</strong>{' '}
-            <Badge variant={user.isActive ? 'success' : 'danger'}>
-              {user.isActive ? 'Active' : 'Inactive'}
+            <strong>Email:</strong> {user.email}
+          </p>
+          <p>
+            <strong>Status:</strong>{" "}
+            <Badge variant={user.isActive ? "success" : "danger"}>
+              {user.isActive ? "Active" : "Inactive"}
             </Badge>
           </p>
           <p>
-            <strong>Member since:</strong>{' '}
-            {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+            <strong>Member since:</strong>{" "}
+            {user.createdAt
+              ? new Date(user.createdAt).toLocaleDateString()
+              : "N/A"}
           </p>
         </div>
       </div>

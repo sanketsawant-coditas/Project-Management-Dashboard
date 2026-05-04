@@ -1,10 +1,14 @@
 // src/hooks/useProjects.ts
-import { useState, useEffect, useCallback } from 'react';
-import { projectService } from '@/services/projectService';
-import type { Project } from '@/types';
+import { useState, useEffect, useCallback } from "react";
+import { projectService } from "@/services/projectService";
+import type { Project } from "@/types";
 
-
-export const useProjects = (page: number, limit: number, statusFilter: string, priorityFilter: string) => {
+export const useProjects = (
+  page: number,
+  limit: number,
+  statusFilter: string,
+  priorityFilter: string,
+) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -12,7 +16,12 @@ export const useProjects = (page: number, limit: number, statusFilter: string, p
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await projectService.getAll(page, limit, statusFilter, priorityFilter);
+      const res = await projectService.getAll(
+        page,
+        limit,
+        statusFilter,
+        priorityFilter,
+      );
       setProjects(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
@@ -27,13 +36,20 @@ export const useProjects = (page: number, limit: number, statusFilter: string, p
   }, [fetchProjects]);
 
   const updateProject = (updatedProject: Project) => {
-    setProjects(prev =>
-      prev.map(p => (p.id === updatedProject.id ? updatedProject : p))
+    setProjects((prev) =>
+      prev.map((p) => (p.id === updatedProject.id ? updatedProject : p)),
     );
   };
-    const addProject = (newProject: Project) => {
-      setProjects(prev => [...prev, newProject]);  
-    };
+  const addProject = (newProject: Project) => {
+    setProjects((prev) => [...prev, newProject]);
+  };
 
-  return { projects, totalPages, loading, refetch: fetchProjects, updateProject, addProject  };
+  return {
+    projects,
+    totalPages,
+    loading,
+    refetch: fetchProjects,
+    updateProject,
+    addProject,
+  };
 };

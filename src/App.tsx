@@ -1,23 +1,23 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/context/AuthContext';
-import ProtectedRoute from '@/routes/ProtectedRoute';
-import Navbar from '@/components/Navbar/Navbar';
-import Login from '@/pages/Login/Login';
-import UsersList from '@/pages/users/UsersList';
-import Dashboard from '@/pages/Dashboard/Dashboard';
-import Profile from '@/pages/Profile/Profile';
-import ProjectsList from './pages/projects/ProjectsList';
-import ProjectDetails from './pages/projects/ProjectDetails';
+import { Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
+import ProtectedRoute from "@/routes/ProtectedRoute";
+import Navbar from "@/components/Navbar/Navbar";
+import Login from "@/pages/Login/Login";
+import UsersList from "@/pages/users/UsersList";
+import Dashboard from "@/pages/Dashboard/Dashboard";
+import Profile from "@/pages/Profile/Profile";
+import ProjectsList from "./pages/projects/ProjectsList";
+import ProjectDetails from "./pages/projects/ProjectDetails";
 
-import { Outlet } from 'react-router-dom';
-import NotFound from './pages/NotFound/NotFound';
+import { Outlet } from "react-router-dom";
+import NotFound from "./pages/NotFound/NotFound";
 
 function Layout() {
   return (
     <div>
       <Navbar />
       <div className="container">
-        <Outlet /> 
+        <Outlet />
       </div>
     </div>
   );
@@ -28,8 +28,7 @@ function App() {
     <AuthProvider>
       <Routes>
         {/* Public route */}
-        <Route path="/login" element={<Login />} />
-`       {/* Catch-all for 404 */}
+        <Route path="/login" element={<Login />} />` {/* Catch-all for 404 */}
         <Route path="*" element={<NotFound />} />
         {/* Protected routes group */}
         <Route element={<ProtectedRoute />}>

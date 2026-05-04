@@ -1,20 +1,65 @@
-@use '../../styles/variables' as *;
-@use '../../styles/mixins' as *;
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
 
-.container { padding: $spacing-6; max-width: 800px; margin: 0 auto; }
-.card, .projectsCard { @include card; margin-bottom: $spacing-6; }
-.header { text-align: center; margin-bottom: $spacing-6;
-  .avatar { font-size: 4rem; margin-bottom: $spacing-2; }
-  h1 { margin: $spacing-2 0; }
+.container {
+  padding: $spacing-6;
+  max-width: 800px;
+  margin: 0 auto;
 }
-.info p { margin: $spacing-2 0; }
-
-.projectList { display: flex; flex-direction: column; gap: $spacing-3; }
-.projectItem { border-bottom: 1px solid $gray-200; padding-bottom: $spacing-3;
-  .projectInfo { @include flex-between; margin-bottom: $spacing-2; }
-  .badges { display: flex; gap: $spacing-2; }
-  .progress { display: flex; align-items: center; gap: $spacing-2; background: $gray-100; border-radius: $radius-lg; overflow: hidden;
-    .progressBar { background: $primary; color: white; padding: $spacing-1; text-align: center; transition: width 0.3s; }
+.card,
+.projectsCard {
+  @include card;
+  margin-bottom: $spacing-6;
+}
+.header {
+  text-align: center;
+  margin-bottom: $spacing-6;
+  .avatar {
+    font-size: 4rem;
+    margin-bottom: $spacing-2;
+  }
+  h1 {
+    margin: $spacing-2 0;
   }
 }
-.loading, .error { text-align: center; padding: $spacing-8; }
+.info p {
+  margin: $spacing-2 0;
+}
+
+.projectList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+}
+.projectItem {
+  border-bottom: 1px solid $gray-200;
+  padding-bottom: $spacing-3;
+  .projectInfo {
+    @include flex-between;
+    margin-bottom: $spacing-2;
+  }
+  .badges {
+    display: flex;
+    gap: $spacing-2;
+  }
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    background: $gray-100;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    .progressBar {
+      background: $primary;
+      color: white;
+      padding: $spacing-1;
+      text-align: center;
+      transition: width 0.3s;
+    }
+  }
+}
+.loading,
+.error {
+  text-align: center;
+  padding: $spacing-8;
+}

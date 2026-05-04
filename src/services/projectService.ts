@@ -1,7 +1,6 @@
-import api from '@/api/axios';
-import type { PaginatedResponse } from '../types/api.types';
-import type { Project } from '@/types';
-
+import api from "@/api/axios";
+import type { PaginatedResponse } from "../types/api.types";
+import type { Project } from "@/types";
 
 export const projectService = {
   getAll: (page: number, limit: number, status?: string, priority?: string) => {
@@ -13,7 +12,7 @@ export const projectService = {
 
   getById: (id: string) => api.get<Project>(`/projects/${id}`),
 
-  create: (data: Partial<Project>) => api.post<Project>('/projects', data),
+  create: (data: Partial<Project>) => api.post<Project>("/projects", data),
 
   update: (id: string, data: Partial<Project>) =>
     api.patch(`/projects/${id}`, data),
@@ -26,5 +25,5 @@ export const projectService = {
   removeMember: (projectId: string, userId: string) =>
     api.delete(`/projects/${projectId}/members/${userId}`),
 
-  getStatistics: () => api.get('/projects/statistics'),
+  getStatistics: () => api.get("/projects/statistics"),
 };

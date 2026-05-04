@@ -1,140 +1,185 @@
-import { useMemo, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/Button/Button';
-import { Badge } from '@/components/Badge/Badge';
-import ProjectForm from './ProjectForm';
-import ProjectModal from './ProjectModal';
-import { useProjects } from '@/hooks/useProjects';
-import { formatStatus, formatPriority, statusColor, priorityColor } from '@/utils/formatters';
-import { projectService } from '@/services/projectService';
-import styles from './ProjectsList.module.scss';
-import type { Project } from '@/types';
-import { toast } from 'react-hot-toast/headless';
+import { useMemo, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/Button/Button";
+import { Badge } from "@/components/Badge/Badge";
+import ProjectForm from "./ProjectForm";
+import ProjectModal from "./ProjectModal";
+import { useProjects } from "@/hooks/useProjects";
+import {
+  formatStatus,
+  formatPriority,
+  statusColor,
+  priorityColor,
+} from "@/utils/formatters";
+import { projectService } from "@/services/projectService";
+import styles from "./ProjectsList.module.scss";
+import type { Project } from "@/types";
+import { toast } from "react-hot-toast/headless";
 
 export default function ProjectsList() {
   const { user } = useAuth();
-  const [ownerFilter, setOwnerFilter] = useState('');
+  const [ownerFilter, setOwnerFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState('');
-  const [priorityFilter, setPriorityFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
-const [editingProject, setEditingProject] = useState<Project | null>(null);
-const [modalProject, setModalProject] = useState<Project | null>(null);
-const { projects, totalPages, loading, refetch, updateProject, addProject } = useProjects(page, 10, statusFilter, priorityFilter);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [modalProject, setModalProject] = useState<Project | null>(null);
+  const { projects, totalPages, loading, refetch, updateProject, addProject } =
+    useProjects(page, 10, statusFilter, priorityFilter);
+  const canEdit = user?.role === "admin" || user?.role === "super-admin";
+  const canDelete = user?.role === "super-admin";
 
-  const canEdit = user?.role === 'admin' || user?.role === 'super-admin';
-  const canDelete = user?.role === 'super-admin';
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this project?")) return;
+    try {
+      await projectService.delete(id);
+      toast.success("Project deleted successfully");
+      refetch();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Delete failed");
+    }
+  };
 
-const handleDelete = async (id: string) => {
-  if (!confirm('Delete this project?')) return;
-  try {
-    await projectService.delete(id);
-    toast.success('Project deleted successfully');
-    refetch();
-  } catch (err: any) {
-    toast.error(err.response?.data?.message || 'Delete failed');
-  }
-};
+  const ownerOptions = useMemo(() => {
+    const owners = new Set(projects.map((p) => p.ownerName).filter(Boolean));
+    return ["", ...Array.from(owners).sort()]; // blank = all owners
+  }, [projects]);
 
-      const ownerOptions = useMemo(() => {
-        const owners = new Set(projects.map(p => p.ownerName).filter(Boolean));
-        return ['', ...Array.from(owners).sort()]; // blank = all owners
-      }, [projects]);
-
-      const displayedProjects = useMemo(() => {
-        let filtered = projects;
-        if (statusFilter) {
-          filtered = filtered.filter(p => p.status === statusFilter);
-        }
-        if (priorityFilter) {
-          filtered = filtered.filter(p => p.priority === priorityFilter);
-        }
-        if (ownerFilter) {
-          filtered = filtered.filter(p => p.ownerName === ownerFilter);
-        }
-        return filtered;
-      }, [projects, statusFilter, priorityFilter, ownerFilter]);
-
+  const displayedProjects = useMemo(() => {
+    let filtered = projects;
+    if (statusFilter) {
+      filtered = filtered.filter((p) => p.status === statusFilter);
+    }
+    if (priorityFilter) {
+      filtered = filtered.filter((p) => p.priority === priorityFilter);
+    }
+    if (ownerFilter) {
+      filtered = filtered.filter((p) => p.ownerName === ownerFilter);
+    }
+    return filtered;
+  }, [projects, statusFilter, priorityFilter, ownerFilter]);
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Projects</h1>
         {canEdit && (
-          <Button onClick={() => { setEditingProject(null); setShowForm(true); }}>
+          <Button
+            onClick={() => {
+              setEditingProject(null);
+              setShowForm(true);
+            }}
+          >
             Create Project
           </Button>
         )}
       </div>
 
-    <div className={styles.filters}>
-      <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-        <option value="">All Status</option>
-        <option value="planning">Planning</option>
-        <option value="in_progress">In Progress</option>
-        <option value="on_hold">On Hold</option>
-        <option value="completed">Completed</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
-      <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-        <option value="">All Priority</option>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-        <option value="urgent">Urgent</option>
-      </select>
-      <select value={ownerFilter} onChange={(e) => setOwnerFilter(e.target.value)}>
-        <option value="">All Owners</option>
-        {ownerOptions.slice(1).map(owner => (
-          <option key={owner} value={owner}>{owner}</option>
-        ))}
-      </select>
-      <Button variant="secondary" onClick={() => {
-        setStatusFilter('');
-        setPriorityFilter('');
-        setOwnerFilter('');
-      }}>
-        Clear Filters
-      </Button>
-    </div>
+      <div className={styles.filters}>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="">All Status</option>
+          <option value="planning">Planning</option>
+          <option value="in_progress">In Progress</option>
+          <option value="on_hold">On Hold</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+        >
+          <option value="">All Priority</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="urgent">Urgent</option>
+        </select>
+        <select
+          value={ownerFilter}
+          onChange={(e) => setOwnerFilter(e.target.value)}
+        >
+          <option value="">All Owners</option>
+          {ownerOptions.slice(1).map((owner) => (
+            <option key={owner} value={owner}>
+              {owner}
+            </option>
+          ))}
+        </select>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setStatusFilter("");
+            setPriorityFilter("");
+            setOwnerFilter("");
+          }}
+        >
+          Clear Filters
+        </Button>
+      </div>
 
       {loading && <div>Loading...</div>}
 
       <div className={styles.grid}>
         {displayedProjects.map((p) => (
-          <div key={p.id} className={styles.card} onClick={() => setModalProject(p)}>
+          <div
+            key={p.id}
+            className={styles.card}
+            onClick={() => setModalProject(p)}
+          >
             <div className={styles.cardHeader}>
               <h3>{p.name}</h3>
               <div className={styles.badges}>
-                <Badge variant={statusColor[p.status]}>{formatStatus(p.status)}</Badge>
-                <Badge variant={priorityColor[p.priority]}>{formatPriority(p.priority)}</Badge>
+                <Badge variant={statusColor[p.status]}>
+                  {formatStatus(p.status)}
+                </Badge>
+                <Badge variant={priorityColor[p.priority]}>
+                  {formatPriority(p.priority)}
+                </Badge>
               </div>
             </div>
             <div className={styles.progress}>
-              <div className={styles.progressBar} style={{ width: `${p.progress}%` }} />
+              <div
+                className={styles.progressBar}
+                style={{ width: `${p.progress}%` }}
+              />
               <span>{p.progress}%</span>
             </div>
             <div className={styles.details}>
               <div>Owner: {p.ownerName}</div>
               <div>Team: {p.members?.length || 0} members</div>
               <div>Start: {new Date(p.startDate).toLocaleDateString()}</div>
-              {p.endDate && <div>End: {new Date(p.endDate).toLocaleDateString()}</div>}
+              {p.endDate && (
+                <div>End: {new Date(p.endDate).toLocaleDateString()}</div>
+              )}
             </div>
-            <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
+            <div
+              className={styles.actions}
+              onClick={(e) => e.stopPropagation()}
+            >
               {canEdit && (
-                <Button variant="secondary" onClick={(e) => {
-                  e.stopPropagation();
-                  setEditingProject(p);
-                  setShowForm(true);
-                }}>
+                <Button
+                  variant="secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingProject(p);
+                    setShowForm(true);
+                  }}
+                >
                   Edit
                 </Button>
               )}
               {canDelete && (
-                <Button variant="danger" onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(p.id);
-                }}>
+                <Button
+                  variant="danger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(p.id);
+                  }}
+                >
                   Delete
                 </Button>
               )}
@@ -144,22 +189,31 @@ const handleDelete = async (id: string) => {
       </div>
 
       <div className={styles.pagination}>
-        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-        <span>Page {page} of {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
+        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+          Prev
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </button>
       </div>
 
-     {showForm && (
+      {showForm && (
         <ProjectForm
           project={editingProject}
           onClose={() => setShowForm(false)}
           onSuccess={(updatedProject) => {
             if (editingProject) {
-              updateProject(updatedProject);   // edit → replace the existing project
+              updateProject(updatedProject); // edit → replace the existing project
             } else {
-              addProject(updatedProject);      // create → add to the beginning/end
+              addProject(updatedProject); // create → add to the beginning/end
             }
-            setShowForm(false);                // close modal after update
+            setShowForm(false); // close modal after update
           }}
         />
       )}
@@ -175,9 +229,9 @@ const handleDelete = async (id: string) => {
             setShowForm(true);
           }}
           canEdit={canEdit}
-          onUpdate={(updated) => updateProject(updated)}   
+          onUpdate={(updated) => updateProject(updated)}
         />
       )}
-          </div>
-        );
+    </div>
+  );
 }
