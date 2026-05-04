@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button/Button';
 import { Badge } from '@/components/Badge/Badge';
@@ -13,13 +13,13 @@ import { toast } from 'react-hot-toast/headless';
 
 export default function ProjectsList() {
   const { user } = useAuth();
+  const [ownerFilter, setOwnerFilter] = useState('');
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
 const [editingProject, setEditingProject] = useState<Project | null>(null);
 const [modalProject, setModalProject] = useState<Project | null>(null);
-
 const { projects, totalPages, loading, refetch, updateProject, addProject } = useProjects(page, 10, statusFilter, priorityFilter);
 
   const canEdit = user?.role === 'admin' || user?.role === 'super-admin';
@@ -36,6 +36,26 @@ const handleDelete = async (id: string) => {
   }
 };
 
+      const ownerOptions = useMemo(() => {
+        const owners = new Set(projects.map(p => p.ownerName).filter(Boolean));
+        return ['', ...Array.from(owners).sort()]; // blank = all owners
+      }, [projects]);
+
+      const displayedProjects = useMemo(() => {
+        let filtered = projects;
+        if (statusFilter) {
+          filtered = filtered.filter(p => p.status === statusFilter);
+        }
+        if (priorityFilter) {
+          filtered = filtered.filter(p => p.priority === priorityFilter);
+        }
+        if (ownerFilter) {
+          filtered = filtered.filter(p => p.ownerName === ownerFilter);
+        }
+        return filtered;
+      }, [projects, statusFilter, priorityFilter, ownerFilter]);
+
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -47,31 +67,41 @@ const handleDelete = async (id: string) => {
         )}
       </div>
 
-      <div className={styles.filters}>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-          <option value="">All Status</option>
-          <option value="planning">Planning</option>
-          <option value="in_progress">In Progress</option>
-          <option value="on_hold">On Hold</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-        <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-          <option value="">All Priority</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="urgent">Urgent</option>
-        </select>
-        <Button variant="secondary" onClick={() => { setStatusFilter(''); setPriorityFilter(''); }}>
-          Clear Filters
-        </Button>
-      </div>
+    <div className={styles.filters}>
+      <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <option value="">All Status</option>
+        <option value="planning">Planning</option>
+        <option value="in_progress">In Progress</option>
+        <option value="on_hold">On Hold</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+        <option value="">All Priority</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="urgent">Urgent</option>
+      </select>
+      <select value={ownerFilter} onChange={(e) => setOwnerFilter(e.target.value)}>
+        <option value="">All Owners</option>
+        {ownerOptions.slice(1).map(owner => (
+          <option key={owner} value={owner}>{owner}</option>
+        ))}
+      </select>
+      <Button variant="secondary" onClick={() => {
+        setStatusFilter('');
+        setPriorityFilter('');
+        setOwnerFilter('');
+      }}>
+        Clear Filters
+      </Button>
+    </div>
 
       {loading && <div>Loading...</div>}
 
       <div className={styles.grid}>
-        {projects.map((p) => (
+        {displayedProjects.map((p) => (
           <div key={p.id} className={styles.card} onClick={() => setModalProject(p)}>
             <div className={styles.cardHeader}>
               <h3>{p.name}</h3>
