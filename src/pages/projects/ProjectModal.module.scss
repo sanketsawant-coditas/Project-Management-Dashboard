@@ -196,4 +196,35 @@
     text-decoration: underline;
   }
 }
+
+.multiSelect {
+  width: 100%;
+  padding: $spacing-2;
+  border: 1px solid $gray-300;
+  border-radius: $radius-md;
+  font-size: $text-sm;
+  background: white;
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.joinedDate {
+  font-size: $text-xs;
+  color: $gray-500;
+  margin-top: $spacing-1;
+}
+
+.memberList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;  /* align top for multi‑line content */
+  padding: $spacing-2 0;
+  border-bottom: 1px solid $gray-200;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
 }

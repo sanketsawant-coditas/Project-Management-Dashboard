@@ -4,31 +4,13 @@ import { projectService } from '@/services/projectService';
 import { userService } from '@/services/userService';
 import toast from 'react-hot-toast';
 import styles from './ProjectModal.module.scss';
-import type { ProjectModalProps } from './props.types';
+import { formatPriority, formatStatus, type ProjectModalProps } from './props.types';
 
-const formatStatus = (status: string) => {
-  const map: Record<string, string> = {
-    in_progress: 'In Progress',
-    on_hold: 'On Hold',
-    planning: 'Planning',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-  };
-  return map[status] || status;
-};
 
-const formatPriority = (priority: string) => {
-  const map: Record<string, string> = {
-    high: 'High',
-    medium: 'Medium',
-    low: 'Low',
-    urgent: 'Urgent',
-  };
-  return map[priority] || priority;
-};
 
 export default function ProjectModal({ project, onClose, onEdit, canEdit, onUpdate }: ProjectModalProps) {
   const [members, setMembers] = useState(project.members);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [allUsers, setAllUsers] = useState<Array<{ id: string; name: string; email: string }>>([]);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [addingMember, setAddingMember] = useState(false);
@@ -58,17 +40,20 @@ export default function ProjectModal({ project, onClose, onEdit, canEdit, onUpda
   };
 
   const handleAddMember = async () => {
-    if (!selectedUserId) return;
-    try {
-      await projectService.addMember(project.id, selectedUserId);
-      toast.success('Member added successfully');
-      await refreshProject();
-      setSelectedUserId('');
-      setAddingMember(false);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to add member');
+  if (selectedUserIds.length === 0) return;
+  try {
+    // Add each selected user one by one
+    for (const userId of selectedUserIds) {
+      await projectService.addMember(project.id, userId);
     }
-  };
+    toast.success(`${selectedUserIds.length} member(s) added successfully`);
+    await refreshProject();
+    setSelectedUserIds([]);
+    setAddingMember(false);
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || 'Failed to add one or more members');
+  }
+};
 
   const handleRemoveMember = async (userId: string) => {
     if (!confirm('Remove this member from the project?')) return;
