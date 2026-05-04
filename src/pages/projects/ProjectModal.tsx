@@ -35,17 +35,17 @@ export default function ProjectModal({ project, onClose, onEdit, canEdit, onUpda
 
   // Fetch all users for the dropdown
   useEffect(() => {
+    if (!canEdit) return; 
     const fetchUsers = async () => {
       try {
         const res = await userService.getAll(1, 100);
-        const usersList = res.data.data || [];
-        setAllUsers(usersList);
+        setAllUsers(res.data.data || []);
       } catch (err) {
         console.error(err);
       }
     };
     fetchUsers();
-  }, []);
+  }, [canEdit]);
 
   const refreshProject = async () => {
     try {

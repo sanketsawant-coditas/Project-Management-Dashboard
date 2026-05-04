@@ -4,25 +4,156 @@
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   @include flex-center;
   z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
 }
+
 .modalContent {
   background: white;
+  border-radius: $radius-xl;
+  max-width: 700px;          /* slightly wider for two columns */
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: $gray-100;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $gray-400;
+    border-radius: 4px;
+    &:hover { background: $gray-500; }
+  }
+}
+
+/* Header with gradient + accent border */
+.modalContent > h2 {
+  font-size: $text-2xl;
+  font-weight: 700;
+  padding: $spacing-4 $spacing-6;
+  margin: 0;
+  background: linear-gradient(135deg, $gray-50, white);
+  border-bottom: 2px solid $primary;
+  color: $gray-800;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Form grid layout */
+.form {
   padding: $spacing-6;
-  border-radius: $radius-lg;
-  width: 500px;
-  max-width: 90%;
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-3;
-    input, textarea, select {
-      padding: $spacing-2;
-      border: 1px solid $gray-300;
-      border-radius: $radius-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  
+  label {
+    font-weight: 600;
+    font-size: $text-sm;
+    color: $gray-700;
+    margin-bottom: $spacing-1;
+  }
+  
+  input, select, textarea {
+    padding: $spacing-2 $spacing-3;
+    border: 1px solid $gray-300;
+    border-radius: $radius-md;
+    font-size: $text-sm;
+    transition: 0.2s;
+    background: white;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 2px rgba($primary, 0.2);
     }
-    textarea { min-height: 80px; }
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+/* Progress slider (edit only) */
+.slider {
+  width: 100%;
+  cursor: pointer;
+  accent-color: $primary;
+  margin-top: $spacing-1;
+}
+
+.error {
+  color: $danger;
+  font-size: $text-xs;
+  margin-top: $spacing-1;
+  display: block;
+}
+
+/* Buttons at the bottom (sticky) */
+.buttons {
+  display: flex;
+  gap: $spacing-3;
+  justify-content: flex-end;
+  padding: $spacing-4 $spacing-6;
+  background: $gray-50;
+  border-top: 1px solid $gray-200;
+  position: sticky;
+  bottom: 0;
+  margin-top: $spacing-2;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .modalContent {
+    width: 95%;
+    max-height: 90vh;
+  }
+  .row {
+    grid-template-columns: 1fr;
+    gap: $spacing-3;
+  }
+  .form {
+    padding: $spacing-4;
+  }
+  .buttons {
+    padding: $spacing-3;
   }
 }

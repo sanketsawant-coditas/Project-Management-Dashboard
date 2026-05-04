@@ -122,10 +122,14 @@ const handleDelete = async (id: string) => {
      {showForm && (
         <ProjectForm
           project={editingProject}
-          onClose={() => setShowForm(false)}   
-          onSuccess={(newProject) => {
-            setShowForm(false);
-            addProject(newProject);           
+          onClose={() => setShowForm(false)}
+          onSuccess={(updatedProject) => {
+            if (editingProject) {
+              updateProject(updatedProject);   // edit → replace the existing project
+            } else {
+              addProject(updatedProject);      // create → add to the beginning/end
+            }
+            setShowForm(false);                // close modal after update
           }}
         />
       )}
