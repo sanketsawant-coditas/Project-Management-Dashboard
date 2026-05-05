@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 /**
  * A generic hook that wraps any async function (API call),
@@ -6,7 +6,7 @@ import { useState, useCallback } from 'react';
  * to prevent infinite loops in useEffect.
  */
 export function useApi<T, Args extends any[] = any[]>(
-  apiFn: (...args: Args) => Promise<T>
+  apiFn: (...args: Args) => Promise<T>,
 ) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
@@ -26,7 +26,7 @@ export function useApi<T, Args extends any[] = any[]>(
         setLoading(false);
       }
     },
-    [apiFn] 
+    [apiFn],
   );
 
   return { execute, loading, error, data };

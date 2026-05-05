@@ -12,9 +12,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token"),
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     };
     fetchUser();
-  }, [token]);   
+  }, [token]);
 
   const login = (newToken: string, userData: User) => {
     localStorage.setItem("token", newToken);

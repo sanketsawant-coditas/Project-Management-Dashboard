@@ -46,9 +46,22 @@ export default function Login() {
       <div className={styles.card}>
         <h1 className={styles.title}>Project Management System</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Input label="Email" {...register("email")} error={errors.email?.message} autoComplete="off" />
-          <Input label="Password" type="password" {...register("password")} error={errors.password?.message} autoComplete="off" />
-          {errors.root && <div className={styles.error}>{errors.root.message}</div>}
+          <Input
+            label="Email"
+            {...register("email")}
+            error={errors.email?.message}
+            autoComplete="off"
+          />
+          <Input
+            label="Password"
+            type="password"
+            {...register("password")}
+            error={errors.password?.message}
+            autoComplete="off"
+          />
+          {errors.root && (
+            <div className={styles.error}>{errors.root.message}</div>
+          )}
           <Button type="submit" loading={loading} disabled={isButtonDisabled}>
             Login
           </Button>
