@@ -2,7 +2,6 @@ import api from "@/api/axios";
 import type User from "@/types/user.types";
 import type { PaginatedResponse } from "../types/api.types";
 
-// Assuming PaginatedResponse is in types/api.types.ts
 
 export const userService = {
   getAll: (page: number, limit: number) =>

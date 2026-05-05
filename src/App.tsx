@@ -14,12 +14,12 @@ import NotFound from "./pages/NotFound/NotFound";
 
 function Layout() {
   return (
-    <div>
+    <>
       <Navbar />
       <div className="container">
         <Outlet />
       </div>
-    </div>
+    </>
   );
 }
 
@@ -28,7 +28,7 @@ function App() {
     <AuthProvider>
       <Routes>
         {/* Public route */}
-        <Route path="/login" element={<Login />} />` {/* Catch-all for 404 */}
+        <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
         {/* Protected routes group */}
         <Route element={<ProtectedRoute />}>

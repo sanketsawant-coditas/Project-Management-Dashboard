@@ -7,6 +7,7 @@ import { useUsers } from "@/hooks/useUsers";
 import { userService } from "@/services/userService";
 import styles from "./UsersList.module.scss";
 import { toast } from "react-hot-toast/headless";
+import { Navigate } from "react-router-dom";
 
 export default function UsersList() {
   const { user: currentUser } = useAuth();
@@ -60,13 +61,8 @@ export default function UsersList() {
       toast.error(err.response?.data?.message || "Toggle failed");
     }
   };
-
   if (!isSuperAdmin && !isAdmin) {
-    return (
-      <div className={styles.accessDenied}>
-        Access denied. Only admins can view users.
-      </div>
-    );
+    return <Navigate to="/404" replace />;
   }
 
   return (

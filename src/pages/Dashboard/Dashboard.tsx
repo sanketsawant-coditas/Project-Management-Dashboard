@@ -1,65 +1,52 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import api from "@/api/axios";
 import { Badge } from "@/components/Badge/Badge";
+import { useApi } from "@/hooks/useApi";
+import { dashService } from "@/services/dashService";
 import styles from "./Dashboard.module.scss";
-
-interface Statistics {
-  total: number;
-  byStatus: Record<string, number>;
-  byPriority: Record<string, number>;
-  upcomingDeadlines: Array<{ id: string; name: string; endDate: string }>;
-}
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState<Statistics | null>(null);
-  const [assignedProjects, setAssignedProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    execute: getStatistics,
+    loading: statsLoading,
+    data: statsResponse,
+  } = useApi(dashService.getStatistics);
+  const {
+    execute: getProjects,
+    loading: projectsLoading,
+    data: projectsResponse,
+  } = useApi(dashService.getAssignedProjects);
 
   const isAdmin = user?.role === "admin" || user?.role === "super-admin";
   const isRegularUser = user?.role === "user";
 
+  // Extract the actual data from the Axios response
+  const stats = statsResponse?.data; // now of type Statistics | undefined
+  const allProjects = projectsResponse?.data?.data || [];
+  const assignedProjects = allProjects.filter((p: any) =>
+    p.members?.some((m: any) => m.userId === user?.id)
+  );
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (isAdmin) {
-          const statsRes = await api.get("/projects/statistics");
-          setStats(statsRes.data);
-        } else if (isRegularUser) {
-          // Regular User: fetch their assigned projects
-          const projectsRes = await api.get("/projects?limit=100");
-          const allProjects = projectsRes.data.data || [];
-          const userProjects = allProjects.filter((p: any) =>
-            p.members?.some((m: any) => m.userId === user?.id),
-          );
-          setAssignedProjects(userProjects);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [user, isAdmin, isRegularUser]);
+    if (isAdmin) {
+      getStatistics();
+    } else if (isRegularUser) {
+      getProjects();
+    }
+  }, [isAdmin, isRegularUser, getStatistics, getProjects]);
 
-  if (loading)
-    return <div className={styles.loading}>Loading dashboard...</div>;
+  const isLoading = (isAdmin && statsLoading) || (isRegularUser && projectsLoading);
+  if (isLoading) return <div className={styles.loading}>Loading dashboard...</div>;
 
-  // 🔁 Regular User view
+  // Regular user view
   if (isRegularUser) {
     return (
       <div className={styles.container}>
-        <h1>
-          Welcome back, {user?.name} ({user?.role})
-        </h1>
+        <h1>Welcome back, {user?.name} ({user?.role})</h1>
         <div className={styles.card}>
           <h2>Your Profile</h2>
-          <p>
-            <strong>Email:</strong> {user?.email}
-          </p>
+          <p><strong>Email:</strong> {user?.email}</p>
           <p>
             <strong>Status:</strong>{" "}
             <Badge variant={user?.isActive ? "success" : "danger"}>
@@ -85,12 +72,10 @@ export default function Dashboard() {
     );
   }
 
-  // 🔁 Admin / Super Admin view
+  // Admin / Super Admin view
   return (
     <div className={styles.container}>
-      <h1>
-        Welcome back, {user?.name} ({user?.role})
-      </h1>
+      <h1>Welcome back, {user?.name} ({user?.role})</h1>
       <div className={styles.cards}>
         <div className={styles.card}>
           <h3>Total Projects</h3>
