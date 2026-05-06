@@ -6,8 +6,9 @@ import UserForm from "./UserForm";
 import { useUsers } from "@/hooks/useUsers";
 import { userService } from "@/services/userService";
 import styles from "./UsersList.module.scss";
-import { toast } from "react-hot-toast/headless";
 import { Navigate } from "react-router-dom";
+import { useApi } from "@/hooks/useApi";
+import toast from "react-hot-toast"; // fixed import
 
 export default function UsersList() {
   const { user: currentUser } = useAuth();
@@ -15,13 +16,12 @@ export default function UsersList() {
   const [page, setPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [editingUser, setEditingUser] = useState<any>(null); // will be User | null
+  const [editingUser, setEditingUser] = useState<any>(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const { users, totalPages, loading, refetch } = useUsers(
-    page,
-    10,
-    roleFilter,
-  );
+  const { users, totalPages, loading, refetch } = useUsers(page, 10, roleFilter);
+
+  const { execute: deleteUser, loading: isDeleting } = useApi(userService.deleteUser);
+  const { execute: toggleStatus, loading: isToggling } = useApi(userService.toggleStatus);
 
   const isSuperAdmin = currentUser?.role === "super-admin";
   const isAdmin = currentUser?.role === "admin";
@@ -32,18 +32,24 @@ export default function UsersList() {
     return users.filter(
       (u) =>
         u.name.toLowerCase().includes(lowerSearch) ||
-        u.email.toLowerCase().includes(lowerSearch),
+        u.email.toLowerCase().includes(lowerSearch)
     );
   }, [users, debouncedSearch]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete user?")) return;
-    try {
-      await userService.delete(id);
+    const result = await deleteUser(id);
+    if (result) {
       toast.success("User deleted successfully");
       refetch();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Delete failed");
+    }
+  };
+
+  const handleToggleStatus = async (id: string) => {
+    const result = await toggleStatus(id);
+    if (result) {
+      toast.success("Status toggled successfully");
+      refetch();
     }
   };
 
@@ -52,15 +58,6 @@ export default function UsersList() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const handleToggleStatus = async (id: string) => {
-    try {
-      await userService.toggleStatus(id);
-      toast.success("Status toggled successfully");
-      refetch();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Toggle failed");
-    }
-  };
   if (!isSuperAdmin && !isAdmin) {
     return <Navigate to="/404" replace />;
   }
@@ -70,12 +67,7 @@ export default function UsersList() {
       <div className={styles.header}>
         <h1>Users</h1>
         {(isSuperAdmin || isAdmin) && (
-          <Button
-            onClick={() => {
-              setEditingUser(null);
-              setShowForm(true);
-            }}
-          >
+          <Button onClick={() => { setEditingUser(null); setShowForm(true); }}>
             Create User
           </Button>
         )}
@@ -88,10 +80,7 @@ export default function UsersList() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className={styles.searchInput}
         />
-        <select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-        >
+        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
           <option value="">All Roles</option>
           <option value="super-admin">Super Admin</option>
           <option value="admin">Admin</option>
@@ -117,15 +106,7 @@ export default function UsersList() {
               <td>{u.name}</td>
               <td>{u.email}</td>
               <td>
-                <Badge
-                  variant={
-                    u.role === "super-admin"
-                      ? "warning"
-                      : u.role === "admin"
-                        ? "success"
-                        : "default"
-                  }
-                >
+                <Badge variant={u.role === "super-admin" ? "warning" : u.role === "admin" ? "success" : "default"}>
                   {u.role}
                 </Badge>
               </td>
@@ -136,26 +117,17 @@ export default function UsersList() {
               </td>
               <td>
                 {(isSuperAdmin || isAdmin) && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setEditingUser(u);
-                      setShowForm(true);
-                    }}
-                  >
+                  <Button variant="secondary" onClick={() => { setEditingUser(u); setShowForm(true); }}>
                     Edit
                   </Button>
                 )}
                 {(isSuperAdmin || isAdmin) && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleToggleStatus(u.id)}
-                  >
+                  <Button variant="secondary" onClick={() => handleToggleStatus(u.id)} disabled={isToggling}>
                     Toggle Status
                   </Button>
                 )}
                 {isSuperAdmin && (
-                  <Button variant="danger" onClick={() => handleDelete(u.id)}>
+                  <Button variant="danger" onClick={() => handleDelete(u.id)} disabled={isDeleting}>
                     Delete
                   </Button>
                 )}
@@ -166,18 +138,9 @@ export default function UsersList() {
       </table>
 
       <div className={styles.pagination}>
-        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-          Prev
-        </button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          Next
-        </button>
+        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+        <span>Page {page} of {totalPages}</span>
+        <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
       </div>
 
       {showForm && (

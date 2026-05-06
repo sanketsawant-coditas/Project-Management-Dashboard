@@ -7,9 +7,17 @@ import { Button } from "@/components/Button/Button";
 import styles from "./UserForm.module.scss";
 import type { UserFormProps } from "./user.type";
 import { userSchema, type UserFormData } from "@/schemas/user.schema";
+import { useApi } from "@/hooks/useApi";
+import { userService } from "@/services/userService";
+import toast from "react-hot-toast";
 
 export default function UserForm({ user, onClose }: UserFormProps) {
   const { user: currentUser } = useAuth();
+  const isEditMode = !!user;
+
+  const {execute: createUser, loading: isCreating } = useApi(userService.create);
+  const {execute: updateUser, loading: isUpdating } = useApi(userService.update);
+
   const {
     register,
     handleSubmit,
@@ -37,45 +45,50 @@ export default function UserForm({ user, onClose }: UserFormProps) {
   }, [user, setValue]);
 
   const onSubmit = async (data: UserFormData) => {
-    try {
-      if (user) {
-        const payload: any = {
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          isActive: data.isActive,
-        };
-        if (data.password) payload.password = data.password;
-        await api.patch(`/users/${user.id}`, payload);
-      } else {
-        // Create user – password required
-        await api.post("/users", {
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          role: data.role,
-        });
+    if(isEditMode){
+      const payload = {
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        isActive: data.isActive,
+        ...(data.password) ? {password: data.password} : {},
       }
-      onClose();
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to save user");
+      const result = await updateUser(user!.id, payload);
+      if(result){
+        toast.success("User updated sucessfully");
+        onClose();
+      }
+    }else{
+     const result = await createUser({
+        name: data.name,
+        email: data.email,
+        password: data.password!,
+        role: data.role,
+      });
+      if (result) {
+        toast.success("User created successfully");
+        onClose();
+      }
     }
   };
 
+  const isLoading = isSubmitting || isCreating || isUpdating
+
+
   const getRoleOptions = () => {
     if (currentUser?.role === "super-admin") {
-      return ["user", "admin", "super-admin"];
+      return ["user", "admin", "super-admin"] as const;
     }
     if (currentUser?.role === "admin") {
-      return ["user", "admin"];
+      return ["user", "admin"] as const;
     }
-    return ["user"];
+    return ["user"] as const;
   };
 
   return (
     <div className={styles.modal}>
       <div className={styles.modalContent}>
-        <h2>{user ? "Edit User" : "Create User"}</h2>
+        <h2>{isEditMode ? "Edit User" : "Create User"}</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <input type="text" placeholder="Name" {...register("name")} />
@@ -117,7 +130,7 @@ export default function UserForm({ user, onClose }: UserFormProps) {
             )}
           </div>
 
-          {user && (
+          {isEditMode  && (
             <div className={styles.checkboxGroup}>
               <label>
                 <input type="checkbox" {...register("isActive")} />
@@ -128,7 +141,7 @@ export default function UserForm({ user, onClose }: UserFormProps) {
 
           <div className={styles.buttons}>
             <Button type="submit" loading={isSubmitting}>
-              {user ? "Update" : "Create"}
+              {isEditMode  ? "Update" : "Create"}
             </Button>
             <Button variant="secondary" type="button" onClick={onClose}>
               Cancel

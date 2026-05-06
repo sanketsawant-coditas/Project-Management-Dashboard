@@ -18,7 +18,7 @@ export const userService = {
 
   update: (id: string, data: Partial<User>) => api.patch(`/users/${id}`, data),
 
-  delete: (id: string) => api.delete(`/users/${id}`),
+  deleteUser: (id: string) => api.delete(`/users/${id}`),
 
   toggleStatus: (id: string) => api.patch(`/users/${id}/toggle-status`),
 };
