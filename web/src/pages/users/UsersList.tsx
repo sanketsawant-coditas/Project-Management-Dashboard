@@ -8,7 +8,8 @@ import { userService } from "@/services/userService";
 import styles from "./UsersList.module.scss";
 import { Navigate } from "react-router-dom";
 import { useApi } from "@/hooks/useApi";
-import toast from "react-hot-toast"; // fixed import
+import toast from "react-hot-toast"; 
+import type User from "@/types/user.types";
 
 export default function UsersList() {
   const { user: currentUser } = useAuth();
@@ -16,7 +17,7 @@ export default function UsersList() {
   const [page, setPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const { users, totalPages, loading, refetch } = useUsers(page, 10, roleFilter);
 
@@ -145,6 +146,7 @@ export default function UsersList() {
 
       {showForm && (
         <UserForm
+          key={editingUser?.id || "create"}
           user={editingUser}
           onClose={() => {
             setShowForm(false);

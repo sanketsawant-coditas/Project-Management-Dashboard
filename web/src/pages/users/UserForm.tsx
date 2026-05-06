@@ -1,8 +1,6 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthContext";
-import api from "@/api/axios";
 import { Button } from "@/components/Button/Button";
 import styles from "./UserForm.module.scss";
 import type { UserFormProps } from "./user.type";
@@ -18,31 +16,30 @@ export default function UserForm({ user, onClose }: UserFormProps) {
   const {execute: createUser, loading: isCreating } = useApi(userService.create);
   const {execute: updateUser, loading: isUpdating } = useApi(userService.update);
 
+  const defaultValues: UserFormData = user
+    ? {
+        name: user.name,
+        email: user.email,
+        role: user.role as "admin" | "super-admin" | "user", 
+        isActive: user.isActive,
+        password: "", 
+      }
+    : {
+        name: "",
+        email: "",
+        password: "",
+        role: "user",
+        isActive: true,
+      };
+
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      role: "user",
-      isActive: true,
-    },
+    defaultValues,
   });
-  //
-  useEffect(() => {
-    if (user) {
-      setValue("name", user.name);
-      setValue("email", user.email);
-      setValue("role", user.role as "user" | "admin" | "super-admin");
-      setValue("isActive", user.isActive);
-      setValue("password", "");
-    }
-  }, [user, setValue]);
 
   const onSubmit = async (data: UserFormData) => {
     if(isEditMode){
@@ -73,7 +70,6 @@ export default function UserForm({ user, onClose }: UserFormProps) {
   };
 
   const isLoading = isSubmitting || isCreating || isUpdating
-
 
   const getRoleOptions = () => {
     if (currentUser?.role === "super-admin") {
@@ -140,7 +136,7 @@ export default function UserForm({ user, onClose }: UserFormProps) {
           )}
 
           <div className={styles.buttons}>
-            <Button type="submit" loading={isSubmitting}>
+            <Button type="submit" loading={isLoading}>
               {isEditMode  ? "Update" : "Create"}
             </Button>
             <Button variant="secondary" type="button" onClick={onClose}>
